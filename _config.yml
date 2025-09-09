@@ -105,4 +105,4 @@ deploy:
   type: git
   repo: git@github.com:LazyBoneJC/ywc-s-blog.git
   remote: origin
-  branch: main # 或者 master，取決於您的倉庫設定
+  branch: main
