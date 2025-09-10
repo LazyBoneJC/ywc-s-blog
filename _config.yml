@@ -119,7 +119,7 @@ navbar:
 
 # Web Analytics
 web_analytics:
-  google: G-K8ZMSZDX7L # Google 统计的 Tracking ID，参见 https://analytics.google.com/analytics/web/
+  google: "G-K8ZMSZDX7L" # Google 统计的 Tracking ID，参见 https://analytics.google.com/analytics/web/
 
 # About Me
 about:
