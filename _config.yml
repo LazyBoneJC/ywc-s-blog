@@ -41,7 +41,7 @@ external_link:
   exclude: ""
 filename_case: 0
 render_drafts: false
-post_asset_folder: false
+post_asset_folder: true
 relative_link: false
 future: true
 syntax_highlighter: highlight.js
@@ -106,3 +106,43 @@ deploy:
   repo: git@github.com:LazyBoneJC/ywc-s-blog.git
   remote: origin
   branch: main
+
+# Slogan(打字機)
+index:
+  slogan:
+    enable: true
+    text: Documenting my journey in coding and life.
+
+# Navbar
+navbar:
+  blog_title: ywchang's blog
+
+# Web Analytics
+web_analytics:
+  google: G-K8ZMSZDX7L # Google 统计的 Tracking ID，参见 https://analytics.google.com/analytics/web/
+
+# About Me
+about:
+  enable: true
+  banner_img: /img/default.png
+  banner_img_height: 60
+  banner_mask_alpha: 0.3
+  avatar: /img/avatar.png
+  name: "Yu-Wei Chang"
+  intro: "A passionate developer and lifelong learner."
+  icons:
+    - {
+        class: "iconfont icon-github-fill",
+        link: "https://github.com/LazyBoneJC",
+        tip: "GitHub",
+      }
+    - {
+        class: "iconfont icon-linkedin-fill",
+        link: "https://www.linkedin.com/in/yu-wei-chang-6714a91a4/",
+        tip: "LinkedIn",
+      }
+    - {
+        class: "iconfont icon-wechat-fill",
+        link: "+886 919 922 708",
+        tip: "WeChat",
+      }
