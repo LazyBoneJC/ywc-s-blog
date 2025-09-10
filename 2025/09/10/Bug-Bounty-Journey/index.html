@@ -26,15 +26,15 @@
 <meta property="og:site_name" content="ywchang&#39;s blog">
 <meta property="og:description" content="From Bug to Breakthrough: Lessons from My Web3 Security Research JourneyAs a Web3 security researcher, my mission is to help build a more resilient decentralized world. I believe that true security go">
 <meta property="og:locale" content="zh_TW">
-<meta property="og:image" content="https://lazybonejc.github.io/ywc-s-blog/Bug-Bounty-Journey/Lido_Dual_Governance.png">
+<meta property="og:image" content="https://lazybonejc.github.io/ywc-s-blog/2025/09/10/Bug-Bounty-Journey/Lido_Dual_Governance.png">
 <meta property="article:published_time" content="2025-09-10T12:00:00.000Z">
-<meta property="article:modified_time" content="2025-09-10T15:57:40.266Z">
+<meta property="article:modified_time" content="2025-09-10T16:54:15.414Z">
 <meta property="article:author" content="Yu-Wei Chang">
 <meta property="article:tag" content="Bug Bounty">
 <meta property="article:tag" content="Web3 Security">
 <meta property="article:tag" content="Lido Dual Governance">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://lazybonejc.github.io/ywc-s-blog/Bug-Bounty-Journey/Lido_Dual_Governance.png">
+<meta name="twitter:image" content="https://lazybonejc.github.io/ywc-s-blog/2025/09/10/Bug-Bounty-Journey/Lido_Dual_Governance.png">
   
   
   
@@ -76,7 +76,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"lazybonejc.github.io","root":"/ywc-s-blog/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":"G-K8ZMSZDX7L","tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/ywc-s-blog/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"lazybonejc.github.io","root":"/ywc-s-blog/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":12141567439,"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null},"gtag":"G-K8ZMSZDX7L"},"search_path":"/ywc-s-blog/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -86,6 +86,17 @@
   <script  src="/ywc-s-blog/js/utils.js" ></script>
   <script  src="/ywc-s-blog/js/color-schema.js" ></script>
   
+
+  
+
+  
+
+  
+
+  
+
+  
+
 
 
   
@@ -282,7 +293,8 @@
                 
                 <h3 id="From-Bug-to-Breakthrough-Lessons-from-My-Web3-Security-Research-Journey"><a href="#From-Bug-to-Breakthrough-Lessons-from-My-Web3-Security-Research-Journey" class="headerlink" title="From Bug to Breakthrough: Lessons from My Web3 Security Research Journey"></a>From Bug to Breakthrough: Lessons from My Web3 Security Research Journey</h3><p>As a Web3 security researcher, my mission is to help build a more resilient decentralized world. I believe that true security goes beyond simple code audits; it requires a deep understanding of a protocol’s architecture, economic design, and a strong adversarial mindset. My recent deep dive into the Lido Dual Governance and Escrow mechanism was a masterclass in this philosophy. While some of my findings were ultimately deemed out-of-scope or acceptable risks, the process of discovering and reporting them provided invaluable lessons that sharpened my skills as a security professional.</p>
 <p>This article details my journey through five vulnerabilities I found, focusing on the problem-solving process, my thought patterns as a white-hat hacker, and the crucial lessons I learned along the way.</p>
-<p><img src="/ywc-s-blog/Bug-Bounty-Journey/Lido_Dual_Governance.png" srcset="/ywc-s-blog/img/loading.gif" lazyload alt="Lido_Dual_Governance"></p>
+<img src="/ywc-s-blog/2025/09/10/Bug-Bounty-Journey/Lido_Dual_Governance.png" srcset="/ywc-s-blog/img/loading.gif" lazyload class="" title="Lido_Dual_Governance">
+
 <hr>
 <h4 id="1-Malicious-Governance-Configuration-The-Importance-of-Resilient-Design"><a href="#1-Malicious-Governance-Configuration-The-Importance-of-Resilient-Design" class="headerlink" title="1. Malicious Governance Configuration: The Importance of Resilient Design"></a>1. Malicious Governance Configuration: The Importance of Resilient Design</h4><ul>
 <li><strong>The Bug</strong>: I discovered that a compromised governance could permanently freeze all user funds in the <code>Escrow.sol</code> contract during the RageQuit process. By setting a key parameter in an external <code>WithdrawalQueue.sol</code> contract to a near-zero value, a functional deadlock would occur - Malicious Configuration of WithdrawalQueue Leads to Permanent Fund Lock in Escrow Contract.md]. This would cause the withdrawal function to consistently revert, trapping all funds - Malicious Configuration of WithdrawalQueue Leads to Permanent Fund Lock in Escrow Contract.md].</li>
