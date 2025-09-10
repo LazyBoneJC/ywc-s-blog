@@ -1,6 +1,6 @@
 ---
 title: My Bug Bounty Journey
-date: 2024-09-10 20:00:00
+date: 2025-09-10 20:00:00
 tags:
   - Bug Bounty
   - Web3 Security
