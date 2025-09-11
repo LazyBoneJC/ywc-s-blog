@@ -67,10 +67,8 @@ These experiences have refined my ability to think critically, evaluate risks fr
 
 ---
 
-### **My Web3 Security Research Portfolio**
+#### **My Web3 Security Research Portfolio**
 
 If you're interested in my research work, you can visit my GitHub repository to view complete vulnerability reports and executable proof-of-concepts (PoCs).
 
 - **GitHub Repository**: [My Web3 Security Research Portfolio](https://github.com/lazybonejc/bug_bounty_web3)
-
----
