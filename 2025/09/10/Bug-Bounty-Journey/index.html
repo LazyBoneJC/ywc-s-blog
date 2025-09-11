@@ -19,16 +19,16 @@
   <meta name="author" content="Yu-Wei Chang">
   <meta name="keywords" content="">
   
-    <meta name="description" content="From Bug to Breakthrough: Lessons from My Web3 Security Research JourneyAs a Web3 security researcher, my mission is to help build a more resilient decentralized world. I believe that true security go">
+    <meta name="description" content="From Bug to Breakthrough: Lessons from My Web3 Security Research JourneyAs a Web3 developer, my mission is to help build a more resilient decentralized world. I believe that true security goes beyond">
 <meta property="og:type" content="article">
 <meta property="og:title" content="My Bug Bounty Journey">
 <meta property="og:url" content="https://lazybonejc.github.io/ywc-s-blog/2025/09/10/Bug-Bounty-Journey/index.html">
 <meta property="og:site_name" content="ywchang&#39;s blog">
-<meta property="og:description" content="From Bug to Breakthrough: Lessons from My Web3 Security Research JourneyAs a Web3 security researcher, my mission is to help build a more resilient decentralized world. I believe that true security go">
+<meta property="og:description" content="From Bug to Breakthrough: Lessons from My Web3 Security Research JourneyAs a Web3 developer, my mission is to help build a more resilient decentralized world. I believe that true security goes beyond">
 <meta property="og:locale" content="zh_TW">
 <meta property="og:image" content="https://lazybonejc.github.io/ywc-s-blog/2025/09/10/Bug-Bounty-Journey/Lido_Dual_Governance.png">
 <meta property="article:published_time" content="2025-09-10T12:00:00.000Z">
-<meta property="article:modified_time" content="2025-09-10T16:54:15.414Z">
+<meta property="article:modified_time" content="2025-09-11T05:56:52.158Z">
 <meta property="article:author" content="Yu-Wei Chang">
 <meta property="article:tag" content="Bug Bounty">
 <meta property="article:tag" content="Web3 Security">
@@ -76,7 +76,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"lazybonejc.github.io","root":"/ywc-s-blog/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":12141567439,"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null},"gtag":"G-K8ZMSZDX7L"},"search_path":"/ywc-s-blog/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"lazybonejc.github.io","root":"/ywc-s-blog/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":"G-K8ZMSZDX7L","tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null},"gtag":"G-K8ZMSZDX7L"},"search_path":"/ywc-s-blog/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -238,7 +238,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          183 字
+          191 字
         
       </span>
     
@@ -291,7 +291,7 @@
             
               <div class="markdown-body">
                 
-                <h3 id="From-Bug-to-Breakthrough-Lessons-from-My-Web3-Security-Research-Journey"><a href="#From-Bug-to-Breakthrough-Lessons-from-My-Web3-Security-Research-Journey" class="headerlink" title="From Bug to Breakthrough: Lessons from My Web3 Security Research Journey"></a>From Bug to Breakthrough: Lessons from My Web3 Security Research Journey</h3><p>As a Web3 security researcher, my mission is to help build a more resilient decentralized world. I believe that true security goes beyond simple code audits; it requires a deep understanding of a protocol’s architecture, economic design, and a strong adversarial mindset. My recent deep dive into the Lido Dual Governance and Escrow mechanism was a masterclass in this philosophy. While some of my findings were ultimately deemed out-of-scope or acceptable risks, the process of discovering and reporting them provided invaluable lessons that sharpened my skills as a security professional.</p>
+                <h3 id="From-Bug-to-Breakthrough-Lessons-from-My-Web3-Security-Research-Journey"><a href="#From-Bug-to-Breakthrough-Lessons-from-My-Web3-Security-Research-Journey" class="headerlink" title="From Bug to Breakthrough: Lessons from My Web3 Security Research Journey"></a>From Bug to Breakthrough: Lessons from My Web3 Security Research Journey</h3><p>As a Web3 developer, my mission is to help build a more resilient decentralized world. I believe that true security goes beyond simple code audits; it requires a deep understanding of a protocol’s architecture, economic design, and a strong adversarial mindset. My recent deep dive into the Lido Dual Governance and Escrow mechanism was a masterclass in this philosophy. While some of my findings were ultimately deemed out-of-scope or acceptable risks, the process of discovering and reporting them provided invaluable lessons that sharpened my skills as a security professional.</p>
 <p>This article details my journey through five vulnerabilities I found, focusing on the problem-solving process, my thought patterns as a white-hat hacker, and the crucial lessons I learned along the way.</p>
 <img src="/ywc-s-blog/2025/09/10/Bug-Bounty-Journey/Lido_Dual_Governance.png" srcset="/ywc-s-blog/img/loading.gif" lazyload class="" title="Lido_Dual_Governance">
 
@@ -329,6 +329,12 @@
 <li><strong>Technical Communication</strong>: Articulating complex flaws and their impacts in clear, professional reports.</li>
 </ul>
 <p>These experiences have refined my ability to think critically, evaluate risks from both a technical and business perspective, and communicate effectively with development teams. I am confident that these skills will be invaluable in a professional security role, and I am excited to continue contributing to the security and resilience of the Web3 ecosystem.</p>
+<hr>
+<h3 id="My-Web3-Security-Research-Portfolio"><a href="#My-Web3-Security-Research-Portfolio" class="headerlink" title="My Web3 Security Research Portfolio"></a><strong>My Web3 Security Research Portfolio</strong></h3><p>If you’re interested in my research work, you can visit my GitHub repository to view complete vulnerability reports and executable proof-of-concepts (PoCs).</p>
+<ul>
+<li><strong>GitHub Repository</strong>: <a target="_blank" rel="noopener" href="https://github.com/lazybonejc/bug_bounty_web3">My Web3 Security Research Portfolio</a></li>
+</ul>
+<hr>
 
                 
               </div>
