@@ -11,7 +11,7 @@ categories:
 
 ### From Bug to Breakthrough: Lessons from My Web3 Security Research Journey
 
-As a Web3 security researcher, my mission is to help build a more resilient decentralized world. I believe that true security goes beyond simple code audits; it requires a deep understanding of a protocol's architecture, economic design, and a strong adversarial mindset. My recent deep dive into the Lido Dual Governance and Escrow mechanism was a masterclass in this philosophy. While some of my findings were ultimately deemed out-of-scope or acceptable risks, the process of discovering and reporting them provided invaluable lessons that sharpened my skills as a security professional.
+As a Web3 developer, my mission is to help build a more resilient decentralized world. I believe that true security goes beyond simple code audits; it requires a deep understanding of a protocol's architecture, economic design, and a strong adversarial mindset. My recent deep dive into the Lido Dual Governance and Escrow mechanism was a masterclass in this philosophy. While some of my findings were ultimately deemed out-of-scope or acceptable risks, the process of discovering and reporting them provided invaluable lessons that sharpened my skills as a security professional.
 
 This article details my journey through five vulnerabilities I found, focusing on the problem-solving process, my thought patterns as a white-hat hacker, and the crucial lessons I learned along the way.
 
@@ -64,3 +64,13 @@ My research into the Lido Dual Governance mechanism was a pivotal moment in my b
 - **Technical Communication**: Articulating complex flaws and their impacts in clear, professional reports.
 
 These experiences have refined my ability to think critically, evaluate risks from both a technical and business perspective, and communicate effectively with development teams. I am confident that these skills will be invaluable in a professional security role, and I am excited to continue contributing to the security and resilience of the Web3 ecosystem.
+
+---
+
+### **My Web3 Security Research Portfolio**
+
+If you're interested in my research work, you can visit my GitHub repository to view complete vulnerability reports and executable proof-of-concepts (PoCs).
+
+- **GitHub Repository**: [My Web3 Security Research Portfolio](https://github.com/lazybonejc/bug_bounty_web3)
+
+---

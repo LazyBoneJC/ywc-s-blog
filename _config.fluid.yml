@@ -120,7 +120,7 @@ navbar:
 # Web Analytics
 web_analytics:
   enable: true
-  google: 12141567439
+  google: G-K8ZMSZDX7L
   gtag: G-K8ZMSZDX7L
 
 # About Me
@@ -144,7 +144,7 @@ about:
         tip: "LinkedIn",
       }
     - {
-        class: "iconfont icon-wechat-fill",
-        link: "+886 919 922 708",
-        tip: "WeChat",
+        tip: "WhatsApp",
+        class: "iconfont icon-whatsapp-fill",
+        link: "https://wa.me/886919922708",
       }
