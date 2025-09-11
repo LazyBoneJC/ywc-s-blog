@@ -120,8 +120,8 @@ navbar:
 # Web Analytics
 web_analytics:
   enable: true
-  google: G-K8ZMSZDX7L
-  gtag: G-K8ZMSZDX7L
+  google:
+    measurement_id: G-K8ZMSZDX7L
 
 # About Me
 about:
