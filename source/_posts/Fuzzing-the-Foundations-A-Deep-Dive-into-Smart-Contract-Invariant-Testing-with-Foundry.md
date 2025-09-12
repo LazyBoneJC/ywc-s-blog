@@ -1,15 +1,15 @@
 ---
-title: Fuzzing the Foundations: A Deep Dive into Smart Contract Invariant Testing with Foundry
+title: "Fuzzing the Foundations: A Deep Dive into Smart Contract Invariant Testing with Foundry"
 date: 2025-09-12 18:00:00
 tags:
-- Fuzz Testing
-- Invariant Testing
-- Foundry
-- Smart Contract Security
-- Solidity
-- Web3
+  - Fuzz Testing
+  - Invariant Testing
+  - Foundry
+  - Smart Contract Security
+  - Solidity
+  - Web3
 categories:
-- Web3 Security
+  - Web3 Security
 ---
 
 ### Beyond Unit Tests: An Introduction to Fuzz & Invariant Testing for Smart Contracts
