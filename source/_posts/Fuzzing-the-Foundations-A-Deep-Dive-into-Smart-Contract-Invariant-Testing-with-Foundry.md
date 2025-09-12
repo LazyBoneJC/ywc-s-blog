@@ -18,7 +18,7 @@ After completing a comprehensive suite of unit tests, many developers feel confi
 
 This article will introduce the fundamentals of fuzz testing, explain the crucial difference between stateless and stateful (invariant) fuzzing, and demonstrate why it is so vital for projects handling significant financial value, like stablecoin protocols.
 
-![Fuzz_Testing_In_Foundry](Fuzzing-the-Foundations-A-Deep-Dive-into-Smart-Contract-Invariant-Testing-with-Foundry/Blockchain_security.jpg)
+![Fuzz_Testing_In_Foundry](Fuzzing-the-Foundations-A-Deep-Dive-into-Smart-Contract-Invariant-Testing-with-Foundry/Blockchain_Security.jpg)
 
 ---
 
