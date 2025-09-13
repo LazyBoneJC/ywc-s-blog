@@ -110,15 +110,17 @@ This Foundry test script is designed to catch the bug by continuously checking i
 pragma solidity ^0.8.20;
 
 import {Test, console} from "forge-std/Test.sol";
+import {StdInvariant} from "forge-std/StdInvariant.sol";
 import {MyToken} from "../src/MyToken.sol";
 
-contract MyTokenTest is Test {
+contract MyTokenTest is StdInvariant, Test {
     MyToken private token;
     address public attacker;
 
     function setUp() public {
         token = new MyToken();
         attacker = makeAddr("attacker");
+        targetContract(address(token));
     }
 
     // This is our invariant function.
@@ -153,7 +155,7 @@ Foundry will automatically execute the `testFuzz_...` function with random input
 
 To run this invariant test, you would use the following command:
 
-`forge test --invariant`
+`forge test --mt MyTokenTest`
 
 Foundry will then:
 
