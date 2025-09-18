@@ -148,3 +148,11 @@ about:
         class: "iconfont icon-whatsapp-fill",
         link: "https://wa.me/886919922708",
       }
+
+# Mermaid tag
+mermaid:
+  enable: true
+  # Available themes: default | dark | forest | neutral
+  theme:
+    light: default
+    # dark: dark
