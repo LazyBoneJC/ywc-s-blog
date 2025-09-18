@@ -1,0 +1,742 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-TW" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/ywc-s-blog/img/fluid.png">
+  <link rel="icon" href="/ywc-s-blog/img/fluid.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Yu-Wei Chang">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="Decentralized Finance (DeFi) has opened up a world of possibilities, and at its core lies the need for stability in a volatile market. Stablecoins are the bedrock of this new financial landscape, prov">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Building a Decentralized Stablecoin: A Deep Dive into the DeFi Stablecoin Project">
+<meta property="og:url" content="https://lazybonejc.github.io/ywc-s-blog/2025/09/18/Building-a-Decentralized-Stablecoin-A-Deep-Dive-into-the-DeFi-Stablecoin-Project/index.html">
+<meta property="og:site_name" content="ywchang&#39;s blog">
+<meta property="og:description" content="Decentralized Finance (DeFi) has opened up a world of possibilities, and at its core lies the need for stability in a volatile market. Stablecoins are the bedrock of this new financial landscape, prov">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://lazybonejc.github.io/ywc-s-blog/2025/09/18/Building-a-Decentralized-Stablecoin-A-Deep-Dive-into-the-DeFi-Stablecoin-Project/stablecoins.png">
+<meta property="article:published_time" content="2025-09-18T05:00:00.000Z">
+<meta property="article:modified_time" content="2025-09-18T05:43:03.851Z">
+<meta property="article:author" content="Yu-Wei Chang">
+<meta property="article:tag" content="DeFi">
+<meta property="article:tag" content="Stablecoin">
+<meta property="article:tag" content="Solidity">
+<meta property="article:tag" content="Blockchain">
+<meta property="article:tag" content="Chainlink">
+<meta property="article:tag" content="Foundry">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://lazybonejc.github.io/ywc-s-blog/2025/09/18/Building-a-Decentralized-Stablecoin-A-Deep-Dive-into-the-DeFi-Stablecoin-Project/stablecoins.png">
+  
+  
+  
+  <title>Building a Decentralized Stablecoin: A Deep Dive into the DeFi Stablecoin Project - ywchang&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/ywc-s-blog/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/ywc-s-blog/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/ywc-s-blog/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"lazybonejc.github.io","root":"/ywc-s-blog/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":"G-K8ZMSZDX7L"},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/ywc-s-blog/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/ywc-s-blog/js/utils.js" ></script>
+  <script  src="/ywc-s-blog/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=G-K8ZMSZDX7L", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', 'G-K8ZMSZDX7L');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/ywc-s-blog/">
+      <strong>ywchang&#39;s blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/ywc-s-blog/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首頁</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/ywc-s-blog/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>歸檔</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/ywc-s-blog/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分類</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/ywc-s-blog/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>標籤</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/ywc-s-blog/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>關於</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/ywc-s-blog/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Building a Decentralized Stablecoin: A Deep Dive into the DeFi Stablecoin Project"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-09-18 13:00" pubdate>
+          2025年9月18日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          239 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          2 分鐘
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">Building a Decentralized Stablecoin: A Deep Dive into the DeFi Stablecoin Project</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>Decentralized Finance (DeFi) has opened up a world of possibilities, and at its core lies the need for stability in a volatile market. Stablecoins are the bedrock of this new financial landscape, providing a reliable medium of exchange and store of value. While many stablecoins exist, building one from the ground up is an incredible learning experience that reveals the intricate mechanics of DeFi protocols.</p>
+<p>In this post, I’ll walk you through my journey of creating the DeFi Stablecoin project, a decentralized stablecoin pegged to the US Dollar. We’ll explore the architecture, the technical challenges I faced, and the solutions I implemented. Whether you’re a seasoned Solidity developer or just starting, I hope this deep dive offers valuable insights.</p>
+<img src="/ywc-s-blog/2025/09/18/Building-a-Decentralized-Stablecoin-A-Deep-Dive-into-the-DeFi-Stablecoin-Project/stablecoins.png" srcset="/ywc-s-blog/img/loading.gif" lazyload class="" title="Stablecoin">
+
+<h2 id="Project-Overview"><a href="#Project-Overview" class="headerlink" title="Project Overview"></a>Project Overview</h2><p>The goal of the DeFi Stablecoin project was to create a crypto-collateralized, decentralized stablecoin called DSC. The core idea is simple: users can deposit volatile assets like ETH and BTC as collateral to mint DSC tokens, which are designed to maintain a 1:1 peg with the US Dollar.</p>
+<p>The system is built on a principle of <strong>overcollateralization</strong>. This means that the value of the collateral held in the system must always be greater than the value of the DSC tokens that have been minted. This is crucial for maintaining the peg and ensuring the system’s solvency.</p>
+<p>Key features of the project include:</p>
+<ul>
+<li><strong>Collateralized Debt Positions (CDPs):</strong> Users lock up approved collateral to mint DSC.</li>
+<li><strong>Health Factor:</strong> Each user’s position has a “health factor” that reflects the ratio of their collateral’s value to their minted debt. If this factor falls below a certain threshold, their position is at risk of liquidation.</li>
+<li><strong>Liquidation:</strong> To protect the system, undercollateralized positions can be liquidated by other users, who are incentivized with a bonus.</li>
+<li><strong>Chainlink Price Feeds:</strong> The system relies on Chainlink’s decentralized oracles for accurate, real-time price data of the collateral assets.</li>
+</ul>
+<p>The project is built with Solidity for the smart contracts, Foundry as the development and testing framework, and leverages OpenZeppelin’s battle-tested contracts for security.</p>
+<h2 id="Smart-Contract-Architecture"><a href="#Smart-Contract-Architecture" class="headerlink" title="Smart Contract Architecture"></a>Smart Contract Architecture</h2><p>The system is comprised of three main contracts, each with a specific role:</p>
+<h3 id="DecentralizedStableCoin-sol"><a href="#DecentralizedStableCoin-sol" class="headerlink" title="DecentralizedStableCoin.sol"></a><code>DecentralizedStableCoin.sol</code></h3><p>This is the ERC20 token contract for our stablecoin, DSC. It’s a standard <code>ERC20Burnable</code> token from OpenZeppelin, which means tokens can be minted and burned. A critical design choice was to make it <code>Ownable</code>, with the ownership transferred to the <code>DSCEngine</code> contract upon deployment. This ensures that only the core engine can create or destroy DSC tokens, preventing unauthorized minting.</p>
+<h3 id="DSCEngine-sol"><a href="#DSCEngine-sol" class="headerlink" title="DSCEngine.sol"></a><code>DSCEngine.sol</code></h3><p>This is the heart of the system. The <code>DSCEngine</code> contract handles all the core logic. Its responsibilities include:</p>
+<ul>
+<li>Managing collateral deposits and withdrawals.</li>
+<li>Minting new DSC tokens against collateral.</li>
+<li>Burning DSC tokens when a user redeems their collateral.</li>
+<li>Calculating the health factor of a user’s position.</li>
+<li>Handling the liquidation process for undercollateralized positions.</li>
+</ul>
+<h3 id="OracleLib-sol"><a href="#OracleLib-sol" class="headerlink" title="OracleLib.sol"></a><code>OracleLib.sol</code></h3><p>A simple but crucial library for interacting with Chainlink price feeds. Its primary function is to check for “stale” prices. If a price feed hasn’t been updated within a specified timeout period (3 hours in this case), the library will revert the transaction. This is a deliberate safety measure to freeze the system and prevent it from operating on outdated, and therefore potentially inaccurate, price information.</p>
+<h2 id="Development-Challenges-and-Solutions"><a href="#Development-Challenges-and-Solutions" class="headerlink" title="Development Challenges and Solutions"></a>Development Challenges and Solutions</h2><p>Building this project was not without its hurdles. Here are some of the key challenges and how I tackled them:</p>
+<h3 id="1-Ensuring-Collateral-Health-and-Preventing-Insolvency"><a href="#1-Ensuring-Collateral-Health-and-Preventing-Insolvency" class="headerlink" title="1. Ensuring Collateral Health and Preventing Insolvency"></a>1. Ensuring Collateral Health and Preventing Insolvency</h3><p>The biggest challenge in any stablecoin project is maintaining solvency. If the value of the collateral drops below the value of the minted stablecoins, the peg can break.</p>
+<ul>
+<li><strong>Problem:</strong> How do you ensure that every user’s position remains overcollateralized?</li>
+<li><strong>Solution:</strong> The concept of a “health factor.” I created a function, <code>_calculateHealthFactor</code>, that takes the user’s total minted DSC and the USD value of their collateral as input. The system enforces a <code>LIQUIDATION_THRESHOLD</code> of 50%, meaning the collateral value must be at least 150% of the minted DSC value. An internal function, <code>_revertIfHealthFactorIsBroken</code>, is called in every function that could alter a user’s health factor, like <code>mintDsc</code> and <code>redeemCollateral</code>. This function reverts the transaction if the health factor falls below the minimum threshold.</li>
+<li><strong>Health Factor &#x3D; (Total Collateral Value * Weighted Average Liquidation Threshold) &#x2F; Total Borrow Value</strong></li>
+</ul>
+<h3 id="2-Handling-Price-Feeds-and-Oracle-Security"><a href="#2-Handling-Price-Feeds-and-Oracle-Security" class="headerlink" title="2. Handling Price Feeds and Oracle Security"></a>2. Handling Price Feeds and Oracle Security</h3><p>Accurate price data is non-negotiable for a stablecoin. Using unreliable or stale data could lead to catastrophic failure.</p>
+<ul>
+<li><strong>Problem:</strong> How do you protect against stale or manipulated price feeds?</li>
+<li><strong>Solution:</strong> As mentioned earlier, I created the <code>OracleLib.sol</code> library. This library includes a <code>staleCheckLatestRoundData</code> function that wraps Chainlink’s <code>latestRoundData</code> function. It checks the <code>updatedAt</code> timestamp of the price feed and reverts if the data is older than a predefined <code>TIMEOUT</code>. While freezing the protocol may seem drastic, it’s a far better alternative than allowing it to operate with potentially dangerous data.</li>
+</ul>
+<h3 id="3-Incentivizing-Liquidations"><a href="#3-Incentivizing-Liquidations" class="headerlink" title="3. Incentivizing Liquidations"></a>3. Incentivizing Liquidations</h3><p>A robust liquidation mechanism is essential for a healthy stablecoin. Without it, undercollateralized positions would linger, putting the entire system at risk.</p>
+<ul>
+<li><strong>Problem:</strong> Why would someone spend their gas and capital to liquidate another user’s position?</li>
+<li><strong>Solution:</strong> A <code>LIQUIDATION_BONUS</code>. When a liquidator repays a portion of the unhealthy debt, they receive the underlying collateral plus a 10% bonus. This creates a clear financial incentive for third parties to monitor the system and liquidate risky positions, effectively crowdsourcing the system’s stability.</li>
+</ul>
+<p>It’s worth noting a limitation of this simplified model: if the collateral value were to plummet so quickly that positions become 100% or less collateralized before anyone can be liquidated, the liquidation bonus would no longer be an effective incentive. More advanced systems like MakerDAO have additional mechanisms, like debt auctions, to handle such “black swan” events.</p>
+<h3 id="4-Security-Best-Practices"><a href="#4-Security-Best-Practices" class="headerlink" title="4. Security Best Practices"></a>4. Security Best Practices</h3><p>Security is paramount in DeFi. A single vulnerability can lead to millions in losses. I implemented several layers of security measures and testing strategies to ensure the robustness of the protocol.</p>
+<ul>
+<li><strong>Problem:</strong> How do you write secure, robust smart contracts and rigorously test for vulnerabilities?</li>
+<li><strong>Solutions:</strong><ul>
+<li><strong>Checks-Effects-Interactions (CEI) Pattern:</strong> I followed this pattern throughout the <code>DSCEngine</code> contract. The contract first performs all necessary checks (e.g., health factor checks), then makes state changes (e.g., updating balances), and only then interacts with other contracts (e.g., transferring tokens). This pattern, along with OpenZeppelin’s <code>ReentrancyGuard</code>, helps prevent re-entrancy attacks.</li>
+<li><strong>Handler-Based Fuzz Testing:</strong> Beyond standard unit tests, I implemented handler-based fuzz testing using Foundry. This is a powerful technique where a fuzzer throws thousands of random, but valid, transactions at the contracts to uncover edge cases and unexpected states.<ul>
+<li>The <code>Handler.t.sol</code> contract defines a set of actions that users can perform, such as depositing collateral, minting DSC, and redeeming collateral, using randomized parameters.</li>
+<li>The <code>Invariants.t.sol</code> contract then defines the core properties, or “invariants,” of the system that must <em>always</em> remain true. For this project, the most crucial invariant is that the total value of collateral in the protocol must always be greater than or equal to the total supply of minted DSC. Another invariant ensures that all getter functions never revert.</li>
+<li>Foundry’s fuzzer calls the functions in the <code>Handler</code> contract in random sequences and amounts. After each call, it checks if any of the defined invariants in <code>Invariants.t.sol</code> have been broken. This provides a much higher degree of confidence in the system’s robustness compared to writing individual test cases alone.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h2><p>Building the DeFi Stablecoin project has been a fantastic learning experience. It provided a hands-on understanding of the core mechanisms that power some of the largest protocols in DeFi, like MakerDAO’s DAI. From the intricacies of fixed-point math in Solidity to the critical importance of oracle security and robust liquidation mechanisms, this project has been a practical application of DeFi’s foundational principles.</p>
+<p>While this project is a simplified model, it serves as a strong foundation for anyone looking to understand or build upon the concepts of decentralized stablecoins. I encourage you to explore the <a target="_blank" rel="noopener" href="https://github.com/lazybonejc/DeFi_Stablecoin">source code on GitHub</a> and share your thoughts. The future of finance is being built today, and every line of code is a step towards a more open and decentralized world.</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/ywc-s-blog/categories/Web3-Project/" class="category-chain-item">Web3 Project</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/ywc-s-blog/tags/DeFi/" class="print-no-link">#DeFi</a>
+      
+        <a href="/ywc-s-blog/tags/Stablecoin/" class="print-no-link">#Stablecoin</a>
+      
+        <a href="/ywc-s-blog/tags/Solidity/" class="print-no-link">#Solidity</a>
+      
+        <a href="/ywc-s-blog/tags/Blockchain/" class="print-no-link">#Blockchain</a>
+      
+        <a href="/ywc-s-blog/tags/Chainlink/" class="print-no-link">#Chainlink</a>
+      
+        <a href="/ywc-s-blog/tags/Foundry/" class="print-no-link">#Foundry</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Building a Decentralized Stablecoin: A Deep Dive into the DeFi Stablecoin Project</div>
+      <div>https://lazybonejc.github.io/ywc-s-blog/2025/09/18/Building-a-Decentralized-Stablecoin-A-Deep-Dive-into-the-DeFi-Stablecoin-Project/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Yu-Wei Chang</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>發布於</div>
+          <div>2025年9月18日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>許可協議</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/ywc-s-blog/2025/09/17/Unlocking-Deeper-Security-An-Introduction-to-Handler-Based-Invariant-Testing/" title="Unlocking Deeper Security: An Introduction to Handler-Based Invariant Testing">
+                        <span class="hidden-mobile">Unlocking Deeper Security: An Introduction to Handler-Based Invariant Testing</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目錄</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜尋</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">關鍵字</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/ywc-s-blog/js/events.js" ></script>
+<script  src="/ywc-s-blog/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/ywc-s-blog/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/ywc-s-blog/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/ywc-s-blog/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允許 JavaScript 運行的環境下瀏覽效果更佳</div>
+  </noscript>
+</body>
+</html>
