@@ -12,10 +12,10 @@ My background in building complex, real-time AIoT systems at the Institute for I
 I am a continuous learner, constantly exploring emerging technologies like Layer 2 solutions and seeking opportunities to contribute to innovative Web3 teams.
 
 Technical Stack:
-🔹 Blockchain: Solidity, Foundry, Security Audits, Smart Contract Development, DeFi, Ethers.js
+🔹 Blockchain: Solidity, Foundry, Ethers.js
 🔹 Frontend: JavaScript, React, Webpack, Vite
-🔹 Backend: Node.js, RESTful APIs, PostgreSQL, MongoDB, RabbitMQ
-🔹 DevOps & Tools: Git, GitHub, Docker, Linux, MQTT, GCP
+🔹 Backend: Node.js, Express.js, PostgreSQL, MongoDB, RabbitMQ, MQTT
+🔹 Tools: Git, GitHub, Docker, Linux
 
 Connect & Portfolio:
 🔹 GitHub: https://github.com/LazyBoneJC

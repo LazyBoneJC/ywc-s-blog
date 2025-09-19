@@ -27,7 +27,7 @@ The system is built on a principle of **overcollateralization**. This means that
 Key features of the project include:
 
 - **Collateralized Debt Positions (CDPs):** Users lock up approved collateral to mint DSC.
-- **Health Factor:** Each user's position has a "health factor" that reflects the ratio of their collateral's value to their minted debt. If this factor falls below a certain threshold, their position is at risk of liquidation. [ **Health Factor = (Total Collateral Value \* Weighted Average Liquidation Threshold) / Total Borrow Value** ]
+- **Health Factor:** Each user's position has a "health factor" that reflects the ratio of their collateral's value to their minted debt. If this factor falls below a certain threshold, their position is at risk of liquidation.
 - **Liquidation:** To protect the system, undercollateralized positions can be liquidated by other users, who are incentivized with a bonus.
 - **Chainlink Price Feeds:** The system relies on Chainlink's decentralized oracles for accurate, real-time price data of the collateral assets.
 
@@ -65,6 +65,7 @@ The biggest challenge in any stablecoin project is maintaining solvency. If the 
 
 - **Problem:** How do you ensure that every user's position remains overcollateralized?
 - **Solution:** The concept of a "health factor." I created a function, `_calculateHealthFactor`, that takes the user's total minted DSC and the USD value of their collateral as input. The system enforces a `LIQUIDATION_THRESHOLD` of 50%, meaning the collateral value must be at least 150% of the minted DSC value. An internal function, `_revertIfHealthFactorIsBroken`, is called in every function that could alter a user's health factor, like `mintDsc` and `redeemCollateral`. This function reverts the transaction if the health factor falls below the minimum threshold.
+- **Health Factor = (Total Collateral Value \* Weighted Average Liquidation Threshold) / Total Borrow Value**
 
 ### 2. Handling Price Feeds and Oracle Security
 
@@ -84,15 +85,18 @@ It's worth noting a limitation of this simplified model: if the collateral value
 
 ### 4. Security Best Practices
 
-Security is paramount in DeFi. A single vulnerability can lead to millions in losses.
+Security is paramount in DeFi. A single vulnerability can lead to millions in losses. I implemented several layers of security measures and testing strategies to ensure the robustness of the protocol.
 
-- **Problem:** How do you write secure, robust smart contracts?
-- **Solution:** I followed the **Checks-Effects-Interactions (CEI)** pattern throughout the `DSCEngine` contract. This means that the contract first performs all necessary checks (e.g., `moreThanZero`, `isAllowedToken`, and health factor checks), then makes changes to the state of the contract (e.g., updating balances), and only then interacts with other contracts (e.g., transferring tokens). This pattern, along with the use of OpenZeppelin's `ReentrancyGuard` modifier, helps prevent reentrancy attacks, one of the most common vulnerabilities in smart contracts.
+- **Problem:** How do you write secure, robust smart contracts and rigorously test for vulnerabilities?
+- **Solutions:**
+  - **Checks-Effects-Interactions (CEI) Pattern:** I followed this pattern throughout the `DSCEngine` contract. The contract first performs all necessary checks (e.g., health factor checks), then makes state changes (e.g., updating balances), and only then interacts with other contracts (e.g., transferring tokens). This pattern, along with OpenZeppelin's `ReentrancyGuard`, helps prevent re-entrancy attacks.
+  - **Handler-Based Fuzz Testing:** Beyond standard unit tests, I implemented handler-based fuzz testing using Foundry. This is a powerful technique where a fuzzer throws thousands of random, but valid, transactions at the contracts to uncover edge cases and unexpected states.
+    - The `Handler.t.sol` contract defines a set of actions that users can perform, such as depositing collateral, minting DSC, and redeeming collateral, using randomized parameters.
+    - The `Invariants.t.sol` contract then defines the core properties, or "invariants," of the system that must _always_ remain true. For this project, the most crucial invariant is that the total value of collateral in the protocol must always be greater than or equal to the total supply of minted DSC. Another invariant ensures that all getter functions never revert.
+    - Foundry's fuzzer calls the functions in the `Handler` contract in random sequences and amounts. After each call, it checks if any of the defined invariants in `Invariants.t.sol` have been broken. This provides a much higher degree of confidence in the system's robustness compared to writing individual test cases alone.
 
 ## Conclusion
 
 Building the DeFi Stablecoin project has been a fantastic learning experience. It provided a hands-on understanding of the core mechanisms that power some of the largest protocols in DeFi, like MakerDAO's DAI. From the intricacies of fixed-point math in Solidity to the critical importance of oracle security and robust liquidation mechanisms, this project has been a practical application of DeFi's foundational principles.
 
 While this project is a simplified model, it serves as a strong foundation for anyone looking to understand or build upon the concepts of decentralized stablecoins. I encourage you to explore the [source code on GitHub](https://github.com/lazybonejc/DeFi_Stablecoin) and share your thoughts. The future of finance is being built today, and every line of code is a step towards a more open and decentralized world.
-
-If you're interested in my DSC project, you can visit my GitHub repository: [Decentralized Stablecoin (DeFi Stablecoin)](https://github.com/LazyBoneJC/DeFi_Stablecoin)
