@@ -19,16 +19,16 @@
   <meta name="author" content="Yu-Wei Chang">
   <meta name="keywords" content="">
   
-    <meta name="description" content="前言：告別訂單簿 (Order Book)在區塊鏈的世界裡，去中心化交易所 (DEX) 一直是個難題。大多數傳統交易所，無論中心化與否，都依賴「訂單簿」(Order Book) 來媒合買賣雙方。但這種方式在鏈上 (On-chain) 執行不僅速度慢，而且 Gas 消耗極高。 Uniswap V1 的誕生徹底改變了這個賽局。它不使用訂單簿，而是引入了「自動做市商」(Automated Marke">
+    <meta name="description" content="前言：告別訂單簿 (Order Book)在區塊鏈的世界裡，去中心化交易所 (DEX) 一直是個難題。大多數傳統交易所，無論中心化與否，都依賴「訂單簿」(Order Book) 來媒合買賣雙方。但這種方式在鏈上 (On-chain) 執行不僅速度慢，而且 Gas 消耗極高。 Uniswap V1 的誕生徹底改變了這個賽局。它不使用訂單簿，而是引入了「自動做市商」(Automated Market">
 <meta property="og:type" content="article">
 <meta property="og:title" content="深入解析 Uniswap V1：開啟 AMM 時代的 DeFi 基石">
 <meta property="og:url" content="https://lazybonejc.github.io/ywc-s-blog/2025/10/19/UniswapV1-Notes-TW/index.html">
 <meta property="og:site_name" content="ywc&#39;s blog">
-<meta property="og:description" content="前言：告別訂單簿 (Order Book)在區塊鏈的世界裡，去中心化交易所 (DEX) 一直是個難題。大多數傳統交易所，無論中心化與否，都依賴「訂單簿」(Order Book) 來媒合買賣雙方。但這種方式在鏈上 (On-chain) 執行不僅速度慢，而且 Gas 消耗極高。 Uniswap V1 的誕生徹底改變了這個賽局。它不使用訂單簿，而是引入了「自動做市商」(Automated Marke">
+<meta property="og:description" content="前言：告別訂單簿 (Order Book)在區塊鏈的世界裡，去中心化交易所 (DEX) 一直是個難題。大多數傳統交易所，無論中心化與否，都依賴「訂單簿」(Order Book) 來媒合買賣雙方。但這種方式在鏈上 (On-chain) 執行不僅速度慢，而且 Gas 消耗極高。 Uniswap V1 的誕生徹底改變了這個賽局。它不使用訂單簿，而是引入了「自動做市商」(Automated Market">
 <meta property="og:locale" content="zh_TW">
 <meta property="og:image" content="https://lazybonejc.github.io/ywc-s-blog/2025/10/19/UniswapV1-Notes-TW/uniswap.jpg">
 <meta property="article:published_time" content="2025-10-19T08:21:05.000Z">
-<meta property="article:modified_time" content="2025-10-19T08:46:59.877Z">
+<meta property="article:modified_time" content="2025-10-19T08:51:00.993Z">
 <meta property="article:author" content="Yu-Wei Chang">
 <meta property="article:tag" content="Solidity">
 <meta property="article:tag" content="Uniswap">
@@ -308,10 +308,9 @@
               <div class="markdown-body">
                 
                 <img src="/ywc-s-blog/2025/10/19/UniswapV1-Notes-TW/uniswap.jpg" srcset="/ywc-s-blog/img/loading.gif" lazyload class="" title="uniswap">
-
 <h4 id="前言：告別訂單簿-Order-Book"><a href="#前言：告別訂單簿-Order-Book" class="headerlink" title="前言：告別訂單簿 (Order Book)"></a>前言：告別訂單簿 (Order Book)</h4><p>在區塊鏈的世界裡，去中心化交易所 (DEX) 一直是個難題。大多數傳統交易所，無論中心化與否，都依賴「訂單簿」(Order Book) 來媒合買賣雙方。但這種方式在鏈上 (On-chain) 執行不僅速度慢，而且 Gas 消耗極高。</p>
 <p>Uniswap V1 的誕生徹底改變了這個賽局。它不使用訂單簿，而是引入了「自動做市商」(Automated Market Maker, AMM) 機制，並持有一系列的流動性儲備（Liquidity Reserves）。所有交易都直接針對這些儲備（資金池）來執行，使其效率極高。</p>
-<p>這一切的核心，就是那個簡潔而優雅的公式：<strong>$x * y &#x3D; k$</strong>（恆定乘積做市商機制）。</p>
+<p>這一切的核心，就是那個簡潔而優雅的公式：<strong>$x * y = k$</strong>（恆定乘積做市商機制）。</p>
 <h4 id="Uniswap-V1-的核心架構"><a href="#Uniswap-V1-的核心架構" class="headerlink" title="Uniswap V1 的核心架構"></a>Uniswap V1 的核心架構</h4><h5 id="1-Factory-合約：為萬物創建交易所"><a href="#1-Factory-合約：為萬物創建交易所" class="headerlink" title="1. Factory 合約：為萬物創建交易所"></a>1. Factory 合約：為萬物創建交易所</h5><p>Uniswap V1 的架構中有一個關鍵角色：工廠合約 (<code>uniswap_factory.vy</code>) 。這個合約同時扮演了「工廠」(Factory) 和「註冊處」(Registry) 的角色。</p>
 <p>它的核心功能是 <code>createExchange()</code> 。任何人都可以為一個尚未有交易所的 ERC20 代幣，呼叫這個函數來部署一個全新的、獨立的「交易合約」(Exchange Contract) 。</p>
 <p>這個工廠合約會記錄所有已創建的代幣和交易所地址，並提供 <code>getExchange()</code>（用代幣地址查交易所地址）和 <code>getToken()</code>（用交易所地址查代幣地址）這樣的查詢功能。</p>
@@ -322,16 +321,16 @@
 <li>ERC20 到 ERC20 的交易，效率也高於 0x。</li>
 <li>相較於 EtherDelta 或 IDEX 這些鏈上訂單簿交易所，Gas 費用也明顯更低。</li>
 </ul>
-<h4 id="交易機制：x-y-k-如何運作？"><a href="#交易機制：x-y-k-如何運作？" class="headerlink" title="交易機制：x*y&#x3D;k 如何運作？"></a>交易機制：x*y&#x3D;k 如何運作？</h4><p>在 Uniswap V1 中，每個交易合約都只綁定「一種」ERC20 代幣，並同時持有 ETH 和該 ERC20 代幣的流動性池。</p>
-<p>匯率（價格）不是由訂單決定的，而是由池中兩種資產的「相對規模」決定的。<br>機制會始終維持 $eth_pool * token_pool &#x3D; k$ 這個不變量 (Invariant) 。這個 $k$ 值只會在流動性被增加或移除時才會改變。</p>
+<h4 id="交易機制：x-y-k-如何運作？"><a href="#交易機制：x-y-k-如何運作？" class="headerlink" title="交易機制：x*y=k 如何運作？"></a>交易機制：x*y=k 如何運作？</h4><p>在 Uniswap V1 中，每個交易合約都只綁定「一種」ERC20 代幣，並同時持有 ETH 和該 ERC20 代幣的流動性池。</p>
+<p>匯率（價格）不是由訂單決定的，而是由池中兩種資產的「相對規模」決定的。<br>機制會始終維持 $eth_pool * token_pool = k$ 這個不變量 (Invariant) 。這個 $k$ 值只會在流動性被增加或移除時才會改變。</p>
 <h5 id="1-ETH-leftrightarrow-ERC20-交易"><a href="#1-ETH-leftrightarrow-ERC20-交易" class="headerlink" title="1. ETH $\leftrightarrow$ ERC20 交易"></a>1. ETH $\leftrightarrow$ ERC20 交易</h5><p><strong>以 ETH 換 OMG 為例（ETH $\rightarrow$ Token）：</strong></p>
 <p>假設一個資金池最開始由流動性提供者 (LP) 存入了 10 ETH 和 500 OMG。</p>
 <ol>
 <li><p><strong>初始狀態：</strong></p>
 <ul>
-<li><code>ETH_pool</code> &#x3D; 10</li>
-<li><code>OMG_pool</code> &#x3D; 500</li>
-<li><code>Invariant (k)</code> &#x3D; $10 * 500 &#x3D; 5000$</li>
+<li><code>ETH_pool</code> = 10</li>
+<li><code>OMG_pool</code> = 500</li>
+<li><code>Invariant (k)</code> = $10 * 500 = 5000$</li>
 </ul>
 </li>
 <li><p><strong>交易發生：</strong></p>
@@ -339,22 +338,22 @@
 <li>一位買家發送了 <strong>1 ETH</strong> 到合約</li>
 <li>合約會先收取 0.3% 的手續費（<em>範例中使用 0.25%</em>），即 0.0025 ETH</li>
 <li>剩下的 0.9975 ETH 加入 ETH 池中</li>
-<li><code>ETH_pool</code> (新) &#x3D; $10 + 0.9975 &#x3D; 10.9975$</li>
+<li><code>ETH_pool</code> (新) = $10 + 0.9975 = 10.9975$</li>
 </ul>
 </li>
 <li><p><strong>計算兌換：</strong></p>
 <ul>
-<li>為了維持 $k&#x3D;5000$，<code>OMG_pool</code> 的新數量必須是：</li>
-<li><code>OMG_pool</code> (新) &#x3D; $k &#x2F; ETH_pool(\text{新}) &#x3D; 5000 &#x2F; 10.9975 &#x3D; 454.65$ OMG</li>
-<li>買家收到的 OMG &#x3D; <code>OMG_pool</code> (舊) - <code>OMG_pool</code> (新) &#x3D; $500 - 454.65 &#x3D; 45.35$ OMG</li>
+<li>為了維持 $k=5000$，<code>OMG_pool</code> 的新數量必須是：</li>
+<li><code>OMG_pool</code> (新) = $k / ETH_pool(\text{新}) = 5000 / 10.9975 = 454.65$ OMG</li>
+<li>買家收到的 OMG = <code>OMG_pool</code> (舊) - <code>OMG_pool</code> (新) = $500 - 454.65 = 45.35$ OMG</li>
 </ul>
 </li>
 <li><p><strong>手續費去向：</strong></p>
 <ul>
 <li>交易完成後，之前收取的 0.0025 ETH 手續費會被「加回」流動性池中</li>
-<li><code>ETH_pool</code> (最終) &#x3D; $10.9975 + 0.0025 &#x3D; 11$</li>
-<li><code>OMG_pool</code> (最終) &#x3D; 454.65</li>
-<li><strong>新的 Invariant (k)</strong> &#x3D; $11 * 454.65 &#x3D; 5001.15$</li>
+<li><code>ETH_pool</code> (最終) = $10.9975 + 0.0025 = 11$</li>
+<li><code>OMG_pool</code> (最終) = 454.65</li>
+<li><strong>新的 Invariant (k)</strong> = $11 * 454.65 = 5001.15$</li>
 </ul>
 </li>
 </ol>
@@ -395,15 +394,15 @@
 </ul>
 <p>這些手續費會<strong>立即存入流動性儲備中</strong> 。由於總儲備增加了，但 LP Token 總量不變，這意味著每單位 LP Token 的價值都增加了。這就是 LP 的利潤。</p>
 <h5 id="3-LP-的風險：無常損失-Impermanent-Loss"><a href="#3-LP-的風險：無常損失-Impermanent-Loss" class="headerlink" title="3. LP 的風險：無常損失 (Impermanent Loss)"></a>3. LP 的風險：無常損失 (Impermanent Loss)</h5><ul>
-<li>**無常損失 (IL) **：指的是當你存入資金池的代幣，其價格比率相較於存入時發生變化，所導致的價值損失。</li>
+<li><strong>無常損失 (IL) </strong>：指的是當你存入資金池的代幣，其價格比率相較於存入時發生變化，所導致的價值損失。</li>
 <li><strong>舉例：</strong><ul>
-<li>你存入 10 ETH 和 1000 TokenA (此時 1 ETH &#x3D; 100 TokenA)</li>
-<li>此時 $k &#x3D; 10 * 1000 &#x3D; 10000$</li>
-<li>一段時間後，市場價格變為 1 ETH &#x3D; 200 TokenA</li>
-<li>套利者會介入，直到池中的比例也變為 1:200。此時池中會變為 7.071 ETH 和 1414.21 TokenA (因為 $x*y&#x3D;10000$ 且 $x&#x3D;200y$)</li>
-<li><strong>如果你現在贖回：</strong> 你會得到 7.071 ETH 和 1414.21 TokenA。以 TokenA 計價，總價值為 $(7.071 * 200) + 1414.21 &#x3D; 2828.41$ TokenA</li>
-<li><strong>如果你當初沒存入 (HODL)：</strong> 你會擁有 10 ETH 和 1000 TokenA。以 TokenA 計價，總價值為 $(10 * 200) + 1000 &#x3D; 3000$ TokenA</li>
-<li><strong>損失：</strong> $3000 - 2828.41 &#x3D; 171.59$ TokenA，這就是無常損失</li>
+<li>你存入 10 ETH 和 1000 TokenA (此時 1 ETH = 100 TokenA)</li>
+<li>此時 $k = 10 * 1000 = 10000$</li>
+<li>一段時間後，市場價格變為 1 ETH = 200 TokenA</li>
+<li>套利者會介入，直到池中的比例也變為 1:200。此時池中會變為 7.071 ETH 和 1414.21 TokenA (因為 $x*y=10000$ 且 $x=200y$)</li>
+<li><strong>如果你現在贖回：</strong> 你會得到 7.071 ETH 和 1414.21 TokenA。以 TokenA 計價，總價值為 $(7.071 * 200) + 1414.21 = 2828.41$ TokenA</li>
+<li><strong>如果你當初沒存入 (HODL)：</strong> 你會擁有 10 ETH 和 1000 TokenA。以 TokenA 計價，總價值為 $(10 * 200) + 1000 = 3000$ TokenA</li>
+<li><strong>損失：</strong> $3000 - 2828.41 = 171.59$ TokenA，這就是無常損失</li>
 </ul>
 </li>
 </ul>

@@ -255,7 +255,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          239 字
+          237 字
         
       </span>
     
@@ -311,7 +311,6 @@
                 <p>Decentralized Finance (DeFi) has opened up a world of possibilities, and at its core lies the need for stability in a volatile market. Stablecoins are the bedrock of this new financial landscape, providing a reliable medium of exchange and store of value. While many stablecoins exist, building one from the ground up is an incredible learning experience that reveals the intricate mechanics of DeFi protocols.</p>
 <p>In this post, I’ll walk you through my journey of creating the DeFi Stablecoin project, a decentralized stablecoin pegged to the US Dollar. We’ll explore the architecture, the technical challenges I faced, and the solutions I implemented. Whether you’re a seasoned Solidity developer or just starting, I hope this deep dive offers valuable insights.</p>
 <img src="/ywc-s-blog/2025/09/18/Building-a-Decentralized-Stablecoin-A-Deep-Dive-into-the-DeFi-Stablecoin-Project/stablecoins.png" srcset="/ywc-s-blog/img/loading.gif" lazyload class="" title="Stablecoin">
-
 <h2 id="Project-Overview"><a href="#Project-Overview" class="headerlink" title="Project Overview"></a>Project Overview</h2><p>The goal of the DeFi Stablecoin project was to create a crypto-collateralized, decentralized stablecoin called DSC. The core idea is simple: users can deposit volatile assets like ETH and BTC as collateral to mint DSC tokens, which are designed to maintain a 1:1 peg with the US Dollar.</p>
 <p>The system is built on a principle of <strong>overcollateralization</strong>. This means that the value of the collateral held in the system must always be greater than the value of the DSC tokens that have been minted. This is crucial for maintaining the peg and ensuring the system’s solvency.</p>
 <p>Key features of the project include:</p>
@@ -338,7 +337,7 @@
 <ul>
 <li><strong>Problem:</strong> How do you ensure that every user’s position remains overcollateralized?</li>
 <li><strong>Solution:</strong> The concept of a “health factor.” I created a function, <code>_calculateHealthFactor</code>, that takes the user’s total minted DSC and the USD value of their collateral as input. The system enforces a <code>LIQUIDATION_THRESHOLD</code> of 50%, meaning the collateral value must be at least 150% of the minted DSC value. An internal function, <code>_revertIfHealthFactorIsBroken</code>, is called in every function that could alter a user’s health factor, like <code>mintDsc</code> and <code>redeemCollateral</code>. This function reverts the transaction if the health factor falls below the minimum threshold.</li>
-<li><strong>Health Factor &#x3D; (Total Collateral Value * Weighted Average Liquidation Threshold) &#x2F; Total Borrow Value</strong></li>
+<li><strong>Health Factor = (Total Collateral Value * Weighted Average Liquidation Threshold) / Total Borrow Value</strong></li>
 </ul>
 <h3 id="2-Handling-Price-Feeds-and-Oracle-Security"><a href="#2-Handling-Price-Feeds-and-Oracle-Security" class="headerlink" title="2. Handling Price Feeds and Oracle Security"></a>2. Handling Price Feeds and Oracle Security</h3><p>Accurate price data is non-negotiable for a stablecoin. Using unreliable or stale data could lead to catastrophic failure.</p>
 <ul>
