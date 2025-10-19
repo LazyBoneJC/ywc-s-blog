@@ -161,3 +161,7 @@ mermaid:
 i18n:
   type: [post, page]
   generator: [index, archive, category, tag]
+
+mathjax:
+  tags: none
+  single_dollars: true
