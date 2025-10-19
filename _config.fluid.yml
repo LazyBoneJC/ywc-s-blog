@@ -3,13 +3,13 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: ywchang's blog
+title: ywc's blog
 subtitle: ""
 description: ""
 keywords: []
 copyright: "Copyright © 2025-present, Yu-Wei Chang. All rights reserved."
 author: Yu-Wei Chang
-language: zh-TW
+language: [zh-TW, en]
 timezone: "Asia/Taipei"
 
 # URL
@@ -156,3 +156,8 @@ mermaid:
   theme:
     light: default
     # dark: dark
+
+# i18n
+i18n:
+  type: [post, page]
+  generator: [index, archive, category, tag]
