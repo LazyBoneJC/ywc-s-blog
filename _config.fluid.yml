@@ -162,6 +162,15 @@ i18n:
   type: [post, page]
   generator: [index, archive, category, tag]
 
-mathjax:
-  tags: none
-  single_dollars: true
+# mathjax:
+#   tags: none
+#   single_dollars: true
+
+math:
+  enable: true
+  specific: false
+  per_page: true # 建議開啟，這樣只在需要渲染公式的文章中載入，加速頁面
+  engine: mathjax # 或 katex
+  # mathjax:
+  #   cdn: https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+  #   config: TeX-AMS_HTML

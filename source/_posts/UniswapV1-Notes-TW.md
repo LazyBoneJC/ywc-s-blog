@@ -1,7 +1,7 @@
 ---
 title: 深入解析 Uniswap V1：開啟 AMM 時代的 DeFi 基石
 date: 2025-10-19 16:21:05
-mathjax: true
+math: true
 tags:
   - Uniswap
   - AMM
@@ -142,7 +142,6 @@ LP 獲得的交易手續費，本質上就是為了補償他們承擔這種價�
 
 #### 結語
 
-Uniswap V1 以極簡的設計、卓越的 Gas 效率和革命性的 AMM 理念，為 DeFi 世界奠定了不可或缺的基石。
-它雖然存在一些問題（例如必須以 ETH 為中介、無常損失），但也為後來的 V2 和 V3 版本指明了演進的方向。
+Uniswap V1 以極簡的設計、卓越的 Gas 效率和革命性的 AMM 理念，為 DeFi 世界奠定了不可或缺的基石。它雖然存在一些問題（例如必須以 ETH 為中介、無常損失），但也為後來的 V2 和 V3 版本指明了演進的方向。
 
----
+<script> MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] } }; </script> <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"> </script>
