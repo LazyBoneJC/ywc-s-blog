@@ -168,9 +168,32 @@ i18n:
 
 math:
   enable: true
-  specific: false
   per_page: true # 建議開啟，這樣只在需要渲染公式的文章中載入，加速頁面
   engine: mathjax # 或 katex
-  # mathjax:
-  #   cdn: https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
-  #   config: TeX-AMS_HTML
+
+mathjax:
+  enable: false
+  # enable: true
+  # per_page: false # 建議設為 false，讓它統一處理
+  # v3: true
+  # tags: all
+  # cdn: https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+  # # 【新增】MathJax 配置（用於傳遞給 MathJax.config.tex）
+  # # 儘管 v3 減少了依賴，但有時仍需確保沒有 legacy code 被觸發
+  # config:
+  #   tex:
+  #     # 這通常是預設，但確保它沒有被設為某些需要 eval 的擴展
+  #     packages: ["base", "ams", "newcommand"]
+
+# marked:
+#   gfm: true
+#   pedantic: false
+#   sanitize: false
+#   # 禁用 Smartypants，這會轉換引號和破折號，可能與 LaTeX 衝突
+#   smartLists: true
+#   smartypants: false
+
+# Fluid 主題配置 (範例，實際名稱可能不同)
+security:
+  # 嘗試將此設為 false
+  enable_csp: false
