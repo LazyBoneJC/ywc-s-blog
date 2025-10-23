@@ -19,12 +19,12 @@
   <meta name="author" content="Yu-Wei Chang">
   <meta name="keywords" content="">
   
-    <meta name="description" content="Unlocking Deeper Security: An Introduction to Handler-Based Invariant TestingIn my previous article, we explored the fundamentals of invariant testing, a powerful technique for discovering bugs that t">
+    <meta name="description" content="Unlocking Deeper Security: An Introduction to Handler-Based Invariant Testing In my previous article, we explored the fundamentals of invariant testing, a powerful technique for discovering bugs that">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Unlocking Deeper Security: An Introduction to Handler-Based Invariant Testing">
 <meta property="og:url" content="https://lazybonejc.github.io/ywc-s-blog/en/2025/09/17/Unlocking-Deeper-Security-An-Introduction-to-Handler-Based-Invariant-Testing/index.html">
 <meta property="og:site_name" content="ywc&#39;s blog">
-<meta property="og:description" content="Unlocking Deeper Security: An Introduction to Handler-Based Invariant TestingIn my previous article, we explored the fundamentals of invariant testing, a powerful technique for discovering bugs that t">
+<meta property="og:description" content="Unlocking Deeper Security: An Introduction to Handler-Based Invariant Testing In my previous article, we explored the fundamentals of invariant testing, a powerful technique for discovering bugs that">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://lazybonejc.github.io/ywc-s-blog/2025/09/17/Unlocking-Deeper-Security-An-Introduction-to-Handler-Based-Invariant-Testing/Open_Invariant_Testing.svg">
 <meta property="og:image" content="https://lazybonejc.github.io/ywc-s-blog/2025/09/17/Unlocking-Deeper-Security-An-Introduction-to-Handler-Based-Invariant-Testing/Handler_Based_Testing.svg">
@@ -34,9 +34,9 @@
 <meta property="article:tag" content="Foundry">
 <meta property="article:tag" content="Fuzz Testing">
 <meta property="article:tag" content="Invariant Testing">
-<meta property="article:tag" content="Handler-Based Testing">
 <meta property="article:tag" content="Smart Contract Security">
 <meta property="article:tag" content="Web3">
+<meta property="article:tag" content="Handler-Based Testing">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://lazybonejc.github.io/ywc-s-blog/2025/09/17/Unlocking-Deeper-Security-An-Introduction-to-Handler-Based-Invariant-Testing/Open_Invariant_Testing.svg">
   
@@ -309,45 +309,148 @@
             
               <div class="markdown-body">
                 
-                <h3 id="Unlocking-Deeper-Security-An-Introduction-to-Handler-Based-Invariant-Testing"><a href="#Unlocking-Deeper-Security-An-Introduction-to-Handler-Based-Invariant-Testing" class="headerlink" title="Unlocking Deeper Security: An Introduction to Handler-Based Invariant Testing"></a>Unlocking Deeper Security: An Introduction to Handler-Based Invariant Testing</h3><p>In my previous article, we explored the fundamentals of invariant testing, a powerful technique for discovering bugs that traditional unit tests often miss. We learned that the core idea is to test a contract’s core properties (invariants) by feeding it a stream of randomized inputs. However, when applied to real-world, complex protocols, this approach can quickly hit a wall.</p>
-<p>Today, we’ll dive into a more advanced and effective strategy: <strong>Handler-Based Testing</strong>. This method addresses the shortcomings of traditional invariant testing and is essential for achieving a high level of security confidence in sophisticated systems.</p>
-<hr>
-<h3 id="The-Challenge-of-Open-Invariant-Testing"><a href="#The-Challenge-of-Open-Invariant-Testing" class="headerlink" title="The Challenge of Open Invariant Testing"></a>The Challenge of Open Invariant Testing</h3><p>In a traditional or “open” invariant test, the Foundry fuzzer directly calls the public functions of the protocol’s contracts. The goal is to see if any sequence of these calls can break an invariant.</p>
+                <h3
+id="unlocking-deeper-security-an-introduction-to-handler-based-invariant-testing">Unlocking
+Deeper Security: An Introduction to Handler-Based Invariant Testing</h3>
+<p>In my previous article, we explored the fundamentals of invariant
+testing, a powerful technique for discovering bugs that traditional unit
+tests often miss. We learned that the core idea is to test a contract’s
+core properties (invariants) by feeding it a stream of randomized
+inputs. However, when applied to real-world, complex protocols, this
+approach can quickly hit a wall.</p>
+<p>Today, we’ll dive into a more advanced and effective strategy:
+<strong>Handler-Based Testing</strong>. This method addresses the
+shortcomings of traditional invariant testing and is essential for
+achieving a high level of security confidence in sophisticated
+systems.</p>
+<hr />
+<h3 id="the-challenge-of-open-invariant-testing">The Challenge of Open
+Invariant Testing</h3>
+<p>In a traditional or “open” invariant test, the Foundry fuzzer
+directly calls the public functions of the protocol’s contracts. The
+goal is to see if any sequence of these calls can break an
+invariant.</p>
 <p>The diagram below illustrates this model:</p>
 <img src="/ywc-s-blog/2025/09/17/Unlocking-Deeper-Security-An-Introduction-to-Handler-Based-Invariant-Testing/Open_Invariant_Testing.svg" srcset="/ywc-s-blog/img/loading.gif" lazyload class="" title="Open_Invariant_Testing">
-<p>While effective for simple contracts, this approach often fails for complex protocols due to two key issues:</p>
-<ol>
-<li><strong>Excessive Reverts:</strong> Many protocol functions have strict prerequisites. For example, a <code>transfer</code> function requires the sender to have a sufficient token balance. A fuzzer calling these functions with entirely random inputs will lead to a flood of reverting transactions. The fuzzer spends most of its time hitting invalid states, leading to poor test coverage.</li>
-<li><strong>Unrealistic Scenarios:</strong> Without any guiding logic, the fuzzer’s calls can be completely unrealistic. It might try to call <code>withdraw</code> before a user has made a <code>deposit</code>, for instance. This makes the test less meaningful for uncovering real-world vulnerabilities.</li>
+<p>While effective for simple contracts, this approach often fails for
+complex protocols due to two key issues:</p>
+<ol type="1">
+<li><strong>Excessive Reverts:</strong> Many protocol functions have
+strict prerequisites. For example, a <code>transfer</code> function
+requires the sender to have a sufficient token balance. A fuzzer calling
+these functions with entirely random inputs will lead to a flood of
+reverting transactions. The fuzzer spends most of its time hitting
+invalid states, leading to poor test coverage.</li>
+<li><strong>Unrealistic Scenarios:</strong> Without any guiding logic,
+the fuzzer’s calls can be completely unrealistic. It might try to call
+<code>withdraw</code> before a user has made a <code>deposit</code>, for
+instance. This makes the test less meaningful for uncovering real-world
+vulnerabilities.</li>
 </ol>
-<hr>
-<h3 id="The-Solution-Handler-Based-Testing"><a href="#The-Solution-Handler-Based-Testing" class="headerlink" title="The Solution: Handler-Based Testing"></a>The Solution: Handler-Based Testing</h3><p>Handler-Based Testing solves these problems by introducing an intermediary layer called a <strong>Handler</strong>. The fuzzer no longer calls the protocol contracts directly; instead, it calls the functions of the Handler. The Handler, in turn, performs the necessary setup and then calls the protocol’s functions in a controlled manner.</p>
-<p>This model creates a far more meaningful and effective test campaign, as illustrated by the diagram below:</p>
+<hr />
+<h3 id="the-solution-handler-based-testing">The Solution: Handler-Based
+Testing</h3>
+<p>Handler-Based Testing solves these problems by introducing an
+intermediary layer called a <strong>Handler</strong>. The fuzzer no
+longer calls the protocol contracts directly; instead, it calls the
+functions of the Handler. The Handler, in turn, performs the necessary
+setup and then calls the protocol’s functions in a controlled
+manner.</p>
+<p>This model creates a far more meaningful and effective test campaign,
+as illustrated by the diagram below:</p>
 <img src="/ywc-s-blog/2025/09/17/Unlocking-Deeper-Security-An-Introduction-to-Handler-Based-Invariant-Testing/Handler_Based_Testing.svg" srcset="/ywc-s-blog/img/loading.gif" lazyload class="" title="Open_Invariant_Testing">
-<p>Here, the fuzzer’s interactions are guided by the Handler’s logic, ensuring that each function call to the protocol is valid and moves the system to a new, relevant state.</p>
-<hr>
-<h3 id="Key-Advantages-of-Handler-Based-Testing"><a href="#Key-Advantages-of-Handler-Based-Testing" class="headerlink" title="Key Advantages of Handler-Based Testing"></a>Key Advantages of Handler-Based Testing</h3><p>Leveraging handlers in your invariant testing strategy offers several significant benefits:</p>
+<p>Here, the fuzzer’s interactions are guided by the Handler’s logic,
+ensuring that each function call to the protocol is valid and moves the
+system to a new, relevant state.</p>
+<hr />
+<h3 id="key-advantages-of-handler-based-testing">Key Advantages of
+Handler-Based Testing</h3>
+<p>Leveraging handlers in your invariant testing strategy offers several
+significant benefits:</p>
 <ul>
-<li><strong>Fewer Reverts, Deeper Coverage:</strong> By managing preconditions, handlers ensure that fuzzer calls are successful. This allows the test campaign to explore the deeper and more complex parts of the protocol’s state machine, leading to better code coverage and a higher chance of finding subtle bugs.</li>
-<li><strong>Actor Management:</strong> Handlers can simulate multiple actors (users) in the system. They can be configured to call functions on behalf of different addresses, mimicking a realistic, multi-user environment.</li>
-<li><strong>Ghost Variables:</strong> Handlers can use “ghost variables”—state variables in the test environment that track off-chain metrics. For example, a handler can track the sum of all token balances and use this value to assert that the protocol’s <code>totalSupply</code> invariant is never violated.</li>
-<li><strong>Bounded Inputs:</strong> Handlers can use Foundry’s <code>bound()</code> helper function to constrain fuzzer-generated inputs to a realistic range. This prevents the test from wasting time on values that would never occur on-chain.</li>
-<li><strong>Function-Level Assertions:</strong> Handlers allow you to perform fine-grained assertions on state changes as they happen. You can check if a user’s balance has decreased by the correct amount after a transfer, for example.</li>
+<li><strong>Fewer Reverts, Deeper Coverage:</strong> By managing
+preconditions, handlers ensure that fuzzer calls are successful. This
+allows the test campaign to explore the deeper and more complex parts of
+the protocol’s state machine, leading to better code coverage and a
+higher chance of finding subtle bugs.</li>
+<li><strong>Actor Management:</strong> Handlers can simulate multiple
+actors (users) in the system. They can be configured to call functions
+on behalf of different addresses, mimicking a realistic, multi-user
+environment.</li>
+<li><strong>Ghost Variables:</strong> Handlers can use “ghost
+variables”—state variables in the test environment that track off-chain
+metrics. For example, a handler can track the sum of all token balances
+and use this value to assert that the protocol’s
+<code>totalSupply</code> invariant is never violated.</li>
+<li><strong>Bounded Inputs:</strong> Handlers can use Foundry’s
+<code>bound()</code> helper function to constrain fuzzer-generated
+inputs to a realistic range. This prevents the test from wasting time on
+values that would never occur on-chain.</li>
+<li><strong>Function-Level Assertions:</strong> Handlers allow you to
+perform fine-grained assertions on state changes as they happen. You can
+check if a user’s balance has decreased by the correct amount after a
+transfer, for example.</li>
 </ul>
-<hr>
-<h3 id="A-Simple-Code-Example-with-my-Stablecoin-Project"><a href="#A-Simple-Code-Example-with-my-Stablecoin-Project" class="headerlink" title="A Simple Code Example with my Stablecoin Project"></a>A Simple Code Example with my Stablecoin Project</h3><p>Now, let’s use the code from my DeFi stablecoin project to demonstrate how Handler-Based Testing can effectively validate protocol invariants. In the project, <code>Handler.t.sol</code> simulates user actions, while <code>Invariants.t.sol</code> defines and checks the core properties of the system.</p>
-<h4 id="1-The-Handler-Contract-Handler-t-sol"><a href="#1-The-Handler-Contract-Handler-t-sol" class="headerlink" title="1. The Handler Contract (Handler.t.sol)"></a>1. The Handler Contract (<code>Handler.t.sol</code>)</h4><p>This <code>Handler</code> contract is the primary target for the fuzzer. It contains public functions that mimic user interactions with the <code>DSCEngine</code> protocol, such as depositing collateral, redeeming it, and minting the stablecoin.</p>
+<hr />
+<h3 id="a-simple-code-example-with-my-stablecoin-project">A Simple Code
+Example with my Stablecoin Project</h3>
+<p>Now, let’s use the code from my DeFi stablecoin project to
+demonstrate how Handler-Based Testing can effectively validate protocol
+invariants. In the project, <code>Handler.t.sol</code> simulates user
+actions, while <code>Invariants.t.sol</code> defines and checks the core
+properties of the system.</p>
+<h4 id="the-handler-contract-handler.t.sol">1. The Handler Contract
+(<code>Handler.t.sol</code>)</h4>
+<p>This <code>Handler</code> contract is the primary target for the
+fuzzer. It contains public functions that mimic user interactions with
+the <code>DSCEngine</code> protocol, such as depositing collateral,
+redeeming it, and minting the stablecoin.</p>
 <ul>
-<li><strong><code>depositCollateral()</code></strong>: This function simulates a user depositing collateral. It bounds the random <code>amountCollateral</code> to a reasonable size and then performs the necessary steps: minting the collateral, approving the <code>dsce</code> contract, and finally calling <code>dsce.depositCollateral()</code>. It also keeps track of which users have deposited collateral by adding them to the <code>usersWithCollateralDeposited</code> array.</li>
-<li><strong><code>redeemCollateral()</code></strong>: This function handles collateral redemption. Before allowing the redemption, it performs a crucial check to ensure the user’s health factor remains above the minimum threshold after the transaction. This prevents the fuzzer from executing transactions that would cause an invalid state and helps focus the test on valid protocol behaviors.</li>
-<li><strong><code>mintDsc()</code></strong>: This function simulates a user minting the stablecoin. It first calculates the maximum amount of DSC a user can mint based on their collateral value and health factor. It then uses <code>bound()</code> to ensure the fuzzer’s random <code>amount</code> is within this valid range, ensuring that every minting transaction is legitimate. It also increments a public <code>timesMintCalled</code> counter, a form of “ghost variable” that tracks this key operation.</li>
+<li><strong><code>depositCollateral()</code></strong>: This function
+simulates a user depositing collateral. It bounds the random
+<code>amountCollateral</code> to a reasonable size and then performs the
+necessary steps: minting the collateral, approving the <code>dsce</code>
+contract, and finally calling <code>dsce.depositCollateral()</code>. It
+also keeps track of which users have deposited collateral by adding them
+to the <code>usersWithCollateralDeposited</code> array.</li>
+<li><strong><code>redeemCollateral()</code></strong>: This function
+handles collateral redemption. Before allowing the redemption, it
+performs a crucial check to ensure the user’s health factor remains
+above the minimum threshold after the transaction. This prevents the
+fuzzer from executing transactions that would cause an invalid state and
+helps focus the test on valid protocol behaviors.</li>
+<li><strong><code>mintDsc()</code></strong>: This function simulates a
+user minting the stablecoin. It first calculates the maximum amount of
+DSC a user can mint based on their collateral value and health factor.
+It then uses <code>bound()</code> to ensure the fuzzer’s random
+<code>amount</code> is within this valid range, ensuring that every
+minting transaction is legitimate. It also increments a public
+<code>timesMintCalled</code> counter, a form of “ghost variable” that
+tracks this key operation.</li>
 </ul>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// Handler.t.sol<br><br>// SPDX-License-Identifier: MIT<br>pragma solidity ^0.8.18;<br>import &#123;Test&#125; from &quot;forge-std/Test.sol&quot;;<br>import &#123;DSCEngine&#125; from &quot;../../src/DSCEngine.sol&quot;;<br>import &#123;DecentralizedStableCoin&#125; from &quot;../../src/DecentralizedStableCoin.sol&quot;;<br>import &#123;IERC20&#125; from &quot;@openzeppelin/contracts/token/ERC20/IERC20.sol&quot;;<br>import &#123;HelperConfig&#125; from &quot;../../script/HelperConfig.s.sol&quot;;<br>import &#123;ERC20Mock&#125; from<br>    &quot;@chainlink/contracts/src/v0.8/vendor/openzeppelin-solidity/v4.8.3/contracts/mocks/ERC20Mock.sol&quot;;<br>import &#123;MockV3Aggregator&#125; from &quot;../../test/mocks/MockV3Aggregator.sol&quot;;<br><br>contract Handler is Test &#123;<br>    DSCEngine dsce;<br>    DecentralizedStableCoin dsc;<br><br>    ERC20Mock weth;<br>    ERC20Mock wbtc;<br><br>    uint256 public timesMintCalled;<br>    address[] public usersWithCollateralDeposited;<br>    MockV3Aggregator public ethUsdPriceFeed;<br>    // MockV3Aggregator public btcUsdPriceFeed;<br><br>    uint256 MAX_DEPOSIT_SIZE = type(uint96).max; // 2**96 -1<br><br>    constructor(DSCEngine _dscEngine, DecentralizedStableCoin _dsc) &#123;<br>        dsce = _dscEngine;<br>        dsc = _dsc;<br><br>        address[] memory collateralTokens = dsce.getCollateralTokens();<br>        weth = ERC20Mock(collateralTokens[0]);<br>        wbtc = ERC20Mock(collateralTokens[1]);<br><br>        ethUsdPriceFeed = MockV3Aggregator(dsce.getCollateralTokenPriceFeed(address(weth)));<br>        // btcUsdPriceFeed = MockV3Aggregator(dsce.getCollateralTokenPriceFeed(address(wbtc)));<br>    &#125;<br><br>    function depositCollateral(uint256 collateralSeed, uint256 amountCollateral) public &#123;<br>        ERC20Mock collateral = _getCollateralFromSeed(collateralSeed);<br>        amountCollateral = bound(amountCollateral, 1, MAX_DEPOSIT_SIZE);<br><br>        vm.startPrank(msg.sender);<br>        collateral.mint(msg.sender, amountCollateral);<br>        collateral.approve(address(dsce), amountCollateral);<br>        dsce.depositCollateral(address(collateral), amountCollateral);<br>        vm.stopPrank();<br><br>        usersWithCollateralDeposited.push(msg.sender);<br>    &#125;<br><br>    function redeemCollateral(uint256 collateralSeed, uint256 amountCollateral) public &#123;<br>        ERC20Mock collateral = _getCollateralFromSeed(collateralSeed);<br>        uint256 maxCollateralToRedeem = dsce.getCollateralBalanceOfUser(msg.sender, address(collateral));<br>        amountCollateral = bound(amountCollateral, 0, maxCollateralToRedeem);<br>        if (amountCollateral == 0) &#123;<br>            return;<br>        &#125;<br><br>        // Calculate if this redemption would break the health factor<br>        (uint256 totalDscMinted, uint256 collateralValueInUsd) = dsce.getAccountInformation(msg.sender);<br>        // If user has no DSC minted, they can redeem all collateral<br>        if (totalDscMinted &gt; 0) &#123;<br>            uint256 collateralValueToRedeem = dsce.getUsdValue(address(collateral), amountCollateral);<br>            uint256 newCollateralValueInUsd = collateralValueInUsd - collateralValueToRedeem;<br><br>            // Calculate the new health factor<br>            uint256 newHealthFactor = dsce.calculateHealthFactor(totalDscMinted, newCollateralValueInUsd);<br>            // Only proceed if health factor would remain above minimum<br>            if (newHealthFactor &lt; dsce.getMinHealthFactor()) &#123;<br>                return;<br>            &#125;<br>        &#125;<br><br>        vm.startPrank(msg.sender);<br>        dsce.redeemCollateral(address(collateral), amountCollateral);<br>        vm.stopPrank();<br>    &#125;<br><br>    function mintDsc(uint256 amount, uint256 addressSeed) public &#123;<br>        if (usersWithCollateralDeposited.length == 0) &#123;<br>            return;<br>        &#125;<br>        address sender = usersWithCollateralDeposited[addressSeed % usersWithCollateralDeposited.length];<br><br>        (uint256 totalDscMinted, uint256 collateralValueInUsd) = dsce.getAccountInformation(sender);<br>        // Check for underflow before subtracting<br>        uint256 maxDscToMint;<br>        if (collateralValueInUsd / 2 &lt;= totalDscMinted) &#123;<br>            return;<br>        &#125;<br>        maxDscToMint = (collateralValueInUsd / 2) - totalDscMinted;<br><br>        amount = bound(amount, 0, maxDscToMint);<br>        if (amount == 0) &#123;<br>            return;<br>        &#125;<br><br>        vm.startPrank(sender);<br>        dsce.mintDsc(amount);<br>        vm.stopPrank();<br><br>        timesMintCalled++;<br>    &#125;<br><br>    // Helper Functions<br>    function _getCollateralFromSeed(uint256 collateralSeed) private view returns (ERC20Mock) &#123;<br>        if (collateralSeed % 2 == 0) &#123;<br>            return weth;<br>        &#125; else &#123;<br>            return wbtc;<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
-<h4 id="2-The-Invariant-Test-Contract-Invariants-t-sol"><a href="#2-The-Invariant-Test-Contract-Invariants-t-sol" class="headerlink" title="2. The Invariant Test Contract (Invariants.t.sol)"></a>2. The Invariant Test Contract (<code>Invariants.t.sol</code>)</h4><p>This contract defines the core invariants that I want to validate. It inherits from <code>StdInvariant</code>, which is Foundry’s key base class for Invariant Testing.</p>
+<h4 id="the-invariant-test-contract-invariants.t.sol">2. The Invariant
+Test Contract (<code>Invariants.t.sol</code>)</h4>
+<p>This contract defines the core invariants that I want to validate. It
+inherits from <code>StdInvariant</code>, which is Foundry’s key base
+class for Invariant Testing.</p>
 <ul>
-<li><strong><code>setUp()</code></strong>: This function deploys <code>DSCEngine</code> and <code>DecentralizedStableCoin</code> contracts. Crucially, it then deploys <code>Handler</code> contract and sets it as the target for the fuzzer (<code>targetContract(address(handler))</code>). This tells Foundry to call the public functions of the <code>Handler</code> instead of the protocol itself.</li>
-<li><strong><code>invariant_protocolMustHaveMoreValueThanTotalSupply()</code></strong>: This is the first and most critical invariant. It checks that the total value of all collateral in the protocol is always greater than or equal to the total supply of your stablecoin. This is the fundamental property that prevents the protocol from becoming insolvent.</li>
-<li><strong><code>invariant_getterShouldNotRevert()</code></strong>: This is an “evergreen” invariant that ensures all public view or pure functions do not revert under any circumstances. This is vital for a robust and predictable protocol.</li>
+<li><strong><code>setUp()</code></strong>: This function deploys
+<code>DSCEngine</code> and <code>DecentralizedStableCoin</code>
+contracts. Crucially, it then deploys <code>Handler</code> contract and
+sets it as the target for the fuzzer
+(<code>targetContract(address(handler))</code>). This tells Foundry to
+call the public functions of the <code>Handler</code> instead of the
+protocol itself.</li>
+<li><strong><code>invariant_protocolMustHaveMoreValueThanTotalSupply()</code></strong>:
+This is the first and most critical invariant. It checks that the total
+value of all collateral in the protocol is always greater than or equal
+to the total supply of your stablecoin. This is the fundamental property
+that prevents the protocol from becoming insolvent.</li>
+<li><strong><code>invariant_getterShouldNotRevert()</code></strong>:
+This is an “evergreen” invariant that ensures all public view or pure
+functions do not revert under any circumstances. This is vital for a
+robust and predictable protocol.</li>
 </ul>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// Invariants.t.sol<br><br>// SPDX-License-Identifier: MIT<br>pragma solidity ^0.8.18;<br>import &#123;Test, console&#125; from &quot;forge-std/Test.sol&quot;;<br>import &#123;StdInvariant&#125; from &quot;forge-std/StdInvariant.sol&quot;;<br>import &#123;DeployDSC&#125; from &quot;../../script/DeployDSC.s.sol&quot;;<br>import &#123;DSCEngine&#125; from &quot;../../src/DSCEngine.sol&quot;;<br>import &#123;DecentralizedStableCoin&#125; from &quot;../../src/DecentralizedStableCoin.sol&quot;;<br>import &#123;HelperConfig&#125; from &quot;../../script/HelperConfig.s.sol&quot;;<br>import &#123;IERC20&#125; from &quot;@openzeppelin/contracts/token/ERC20/IERC20.sol&quot;;<br>import &#123;Handler&#125; from &quot;./Handler.t.sol&quot;;<br><br>contract Invariants is StdInvariant, Test &#123;<br>    DeployDSC deployer;<br>    DSCEngine dsce;<br>    DecentralizedStableCoin dsc;<br>    HelperConfig config;<br>    address weth;<br>    address wbtc;<br>    Handler handler;<br><br>    function setUp() external &#123;<br>        deployer = new DeployDSC();<br>        (dsc, dsce, config) = deployer.run();<br>        (,, weth, wbtc,) = config.activeNetworkConfig();<br>        // targetContract(address(dsce));<br>        handler = new Handler(dsce, dsc);<br>        targetContract(address(handler));<br>    &#125;<br><br>    function invariant_protocolMustHaveMoreValueThanTotalSupply() public view &#123;<br>        // get the value of all the collateral in the protocol<br>        // compare it to all the debt (totalSupply of DSC)<br>        uint256 totalSupply = dsc.totalSupply();<br>        uint256 totalWethDeposited = IERC20(weth).balanceOf(address(dsce));<br>        uint256 totalBtcDeposited = IERC20(wbtc).balanceOf(address(dsce));<br><br>        uint256 wethValue = dsce.getUsdValue(weth, totalWethDeposited);<br>        uint256 wbtcValue = dsce.getUsdValue(wbtc, totalBtcDeposited);<br>        console.log(&quot;weth value: &quot;, wethValue);<br>        console.log(&quot;wbtc value: &quot;, wbtcValue);<br>        console.log(&quot;total supply: &quot;, totalSupply);<br>        console.log(&quot;Times mint called:&quot;, handler.timesMintCalled());<br>        assert(wethValue + wbtcValue &gt;= totalSupply);<br>    &#125;<br><br>    function invariant_getterShouldNotRevert() public view &#123;<br>        dsce.getCollateralTokens();<br>        dsce.getCollateralBalanceOfUser(address(1), weth);<br>        dsce.getCollateralBalanceOfUser(address(1), wbtc);<br>        dsce.getHealthFactor(address(1));<br>        dsce.getLiquidationThreshold();<br>        dsce.getAccountInformation(address(1));<br>        dsce.getUsdValue(weth, 1e18);<br>        dsce.getUsdValue(wbtc, 1e8);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 
@@ -389,11 +492,11 @@
       
         <a href="/ywc-s-blog/tags/Invariant-Testing/" class="print-no-link">#Invariant Testing</a>
       
-        <a href="/ywc-s-blog/tags/Handler-Based-Testing/" class="print-no-link">#Handler-Based Testing</a>
-      
         <a href="/ywc-s-blog/tags/Smart-Contract-Security/" class="print-no-link">#Smart Contract Security</a>
       
         <a href="/ywc-s-blog/tags/Web3/" class="print-no-link">#Web3</a>
+      
+        <a href="/ywc-s-blog/tags/Handler-Based-Testing/" class="print-no-link">#Handler-Based Testing</a>
       
     </div>
   

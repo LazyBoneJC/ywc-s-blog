@@ -19,16 +19,16 @@
   <meta name="author" content="Yu-Wei Chang">
   <meta name="keywords" content="">
   
-    <meta name="description" content="前言：告別訂單簿 (Order Book)在區塊鏈的世界裡，去中心化交易所 (DEX) 一直是個難題。大多數傳統交易所，無論中心化與否，都依賴「訂單簿」(Order Book) 來媒合買賣雙方。但這種方式在鏈上 (On-chain) 執行不僅速度慢，而且 Gas 消耗極高。 Uniswap V1 的誕生徹底改變了這個賽局。它不使用訂單簿，而是引入了「自動做市商」(Automated Market">
+    <meta name="description" content="前言：告別訂單簿 (Order Book) 在區塊鏈的世界裡，去中心化交易所 (DEX) 一直是個難題。大多數傳統交易所，無論中心化與否，都依賴「訂單簿」(Order Book) 來媒合買賣雙方。但這種方式在鏈上 (On-chain) 執行不僅速度慢，而且 Gas 消耗極高。 Uniswap V1 的誕生徹底改變了這個賽局。它不使用訂單簿，而是引入了「自動做市商」(Automated Marke">
 <meta property="og:type" content="article">
 <meta property="og:title" content="深入解析 Uniswap V1：開啟 AMM 時代的 DeFi 基石">
 <meta property="og:url" content="https://lazybonejc.github.io/ywc-s-blog/2025/10/19/UniswapV1-Notes-TW/index.html">
 <meta property="og:site_name" content="ywc&#39;s blog">
-<meta property="og:description" content="前言：告別訂單簿 (Order Book)在區塊鏈的世界裡，去中心化交易所 (DEX) 一直是個難題。大多數傳統交易所，無論中心化與否，都依賴「訂單簿」(Order Book) 來媒合買賣雙方。但這種方式在鏈上 (On-chain) 執行不僅速度慢，而且 Gas 消耗極高。 Uniswap V1 的誕生徹底改變了這個賽局。它不使用訂單簿，而是引入了「自動做市商」(Automated Market">
+<meta property="og:description" content="前言：告別訂單簿 (Order Book) 在區塊鏈的世界裡，去中心化交易所 (DEX) 一直是個難題。大多數傳統交易所，無論中心化與否，都依賴「訂單簿」(Order Book) 來媒合買賣雙方。但這種方式在鏈上 (On-chain) 執行不僅速度慢，而且 Gas 消耗極高。 Uniswap V1 的誕生徹底改變了這個賽局。它不使用訂單簿，而是引入了「自動做市商」(Automated Marke">
 <meta property="og:locale" content="zh_TW">
 <meta property="og:image" content="https://lazybonejc.github.io/ywc-s-blog/2025/10/19/UniswapV1-Notes-TW/uniswap.jpg">
 <meta property="article:published_time" content="2025-10-19T08:21:05.000Z">
-<meta property="article:modified_time" content="2025-10-23T07:57:04.425Z">
+<meta property="article:modified_time" content="2025-10-23T09:12:23.042Z">
 <meta property="article:author" content="Yu-Wei Chang">
 <meta property="article:tag" content="Solidity">
 <meta property="article:tag" content="Uniswap">
@@ -265,7 +265,7 @@
         
         
         
-          15 分鐘
+          14 分鐘
         
       </span>
     
@@ -308,107 +308,188 @@
               <div class="markdown-body">
                 
                 <img src="/ywc-s-blog/2025/10/19/UniswapV1-Notes-TW/uniswap.jpg" srcset="/ywc-s-blog/img/loading.gif" lazyload class="" title="uniswap">
-<h4 id="前言：告別訂單簿-Order-Book"><a href="#前言：告別訂單簿-Order-Book" class="headerlink" title="前言：告別訂單簿 (Order Book)"></a>前言：告別訂單簿 (Order Book)</h4><p>在區塊鏈的世界裡，去中心化交易所 (DEX) 一直是個難題。大多數傳統交易所，無論中心化與否，都依賴「訂單簿」(Order Book) 來媒合買賣雙方。但這種方式在鏈上 (On-chain) 執行不僅速度慢，而且 Gas 消耗極高。</p>
-<p>Uniswap V1 的誕生徹底改變了這個賽局。它不使用訂單簿，而是引入了「自動做市商」(Automated Market Maker, AMM) 機制，並持有一系列的流動性儲備（Liquidity Reserves）。所有交易都直接針對這些儲備（資金池）來執行，使其效率極高。</p>
-<p>這一切的核心，就是那個簡潔而優雅的公式：<p>**$x * y = k$**</p>（恆定乘積做市商機制）。</p>
-<h4 id="Uniswap-V1-的核心架構"><a href="#Uniswap-V1-的核心架構" class="headerlink" title="Uniswap V1 的核心架構"></a>Uniswap V1 的核心架構</h4><h5 id="1-Factory-合約：為萬物創建交易所"><a href="#1-Factory-合約：為萬物創建交易所" class="headerlink" title="1. Factory 合約：為萬物創建交易所"></a>1. Factory 合約：為萬物創建交易所</h5><p>Uniswap V1 的架構中有一個關鍵角色：工廠合約 (<code>uniswap_factory.vy</code>) 。這個合約同時扮演了「工廠」(Factory) 和「註冊處」(Registry) 的角色。</p>
-<p>它的核心功能是 <code>createExchange()</code> 。任何人都可以為一個尚未有交易所的 ERC20 代幣，呼叫這個函數來部署一個全新的、獨立的「交易合約」(Exchange Contract) 。</p>
-<p>這個工廠合約會記錄所有已創建的代幣和交易所地址，並提供 <code>getExchange()</code>（用代幣地址查交易所地址）和 <code>getToken()</code>（用交易所地址查代幣地址）這樣的查詢功能。</p>
-<p><strong>需要注意的是：</strong> Factory 合約在創建交易所時，並不會對代幣本身進行任何檢查（例如驗證其是否合法或有價值）。它只確保每個 ERC20 代幣只能有一個對應的交易所合約。因此，用戶在使用時必須自行審核，只與自己信任的代幣進行互動。</p>
-<h5 id="2-Gas-效率：無可比擬的優勢"><a href="#2-Gas-效率：無可比擬的優勢" class="headerlink" title="2. Gas 效率：無可比擬的優勢"></a>2. Gas 效率：無可比擬的優勢</h5><p>Uniswap V1 的設計極其注重 Gas 效率。根據白皮書的基準測試：</p>
+<h4 id="前言告別訂單簿-order-book">前言：告別訂單簿 (Order Book)</h4>
+<p>在區塊鏈的世界裡，去中心化交易所 (DEX)
+一直是個難題。大多數傳統交易所，無論中心化與否，都依賴「訂單簿」(Order
+Book) 來媒合買賣雙方。但這種方式在鏈上 (On-chain) 執行不僅速度慢，而且
+Gas 消耗極高。</p>
+<p>Uniswap V1
+的誕生徹底改變了這個賽局。它不使用訂單簿，而是引入了「自動做市商」(Automated
+Market Maker, AMM) 機制，並持有一系列的流動性儲備（Liquidity
+Reserves）。所有交易都直接針對這些儲備（資金池）來執行，使其效率極高。</p>
+<p>這一切的核心，就是那個簡潔而優雅的公式：<strong><span
+class="math inline"><em>x</em> * <em>y</em> = <em>k</em></span></strong>（恆定乘積做市商機制）。</p>
+<h4 id="uniswap-v1-的核心架構">Uniswap V1 的核心架構</h4>
+<h5 id="factory-合約為萬物創建交易所">1. Factory
+合約：為萬物創建交易所</h5>
+<p>Uniswap V1 的架構中有一個關鍵角色：工廠合約
+(<code>uniswap_factory.vy</code>) 。這個合約同時扮演了「工廠」(Factory)
+和「註冊處」(Registry) 的角色。</p>
+<p>它的核心功能是 <code>createExchange()</code>
+。任何人都可以為一個尚未有交易所的 ERC20
+代幣，呼叫這個函數來部署一個全新的、獨立的「交易合約」(Exchange
+Contract) 。</p>
+<p>這個工廠合約會記錄所有已創建的代幣和交易所地址，並提供
+<code>getExchange()</code>（用代幣地址查交易所地址）和
+<code>getToken()</code>（用交易所地址查代幣地址）這樣的查詢功能。</p>
+<p><strong>需要注意的是：</strong> Factory
+合約在創建交易所時，並不會對代幣本身進行任何檢查（例如驗證其是否合法或有價值）。它只確保每個
+ERC20
+代幣只能有一個對應的交易所合約。因此，用戶在使用時必須自行審核，只與自己信任的代幣進行互動。</p>
+<h5 id="gas-效率無可比擬的優勢">2. Gas 效率：無可比擬的優勢</h5>
+<p>Uniswap V1 的設計極其注重 Gas 效率。根據白皮書的基準測試：</p>
 <ul>
 <li>ETH 到 ERC20 的交易，Gas 消耗比 Bancor 少了近 10 倍。</li>
 <li>ERC20 到 ERC20 的交易，效率也高於 0x。</li>
-<li>相較於 EtherDelta 或 IDEX 這些鏈上訂單簿交易所，Gas 費用也明顯更低。</li>
+<li>相較於 EtherDelta 或 IDEX 這些鏈上訂單簿交易所，Gas
+費用也明顯更低。</li>
 </ul>
-<h4 id="交易機制：x-y-k-如何運作？"><a href="#交易機制：x-y-k-如何運作？" class="headerlink" title="交易機制：x*y=k 如何運作？"></a>交易機制：x*y=k 如何運作？</h4><p>在 Uniswap V1 中，每個交易合約都只綁定「一種」ERC20 代幣，並同時持有 ETH 和該 ERC20 代幣的流動性池。</p>
-<p>匯率（價格）不是由訂單決定的，而是由池中兩種資產的「相對規模」決定的。<br>機制會始終維持 $eth_pool * token_pool = k$ 這個不變量 (Invariant) 。這個 $k$ 值只會在流動性被增加或移除時才會改變。</p>
-<h5 id="1-ETH-leftrightarrow-ERC20-交易"><a href="#1-ETH-leftrightarrow-ERC20-交易" class="headerlink" title="1. ETH $\leftrightarrow$ ERC20 交易"></a>1. ETH <p>$\leftrightarrow$</p> ERC20 交易</h5><p><strong>以 ETH 換 OMG 為例（ETH $\rightarrow$ Token）：</strong></p>
-<p>假設一個資金池最開始由流動性提供者 (LP) 存入了 10 ETH 和 500 OMG。</p>
-<ol>
+<h4 id="交易機制xyk-如何運作">交易機制：x*y=k 如何運作？</h4>
+<p>在 Uniswap V1 中，每個交易合約都只綁定「一種」ERC20 代幣，並同時持有
+ETH 和該 ERC20 代幣的流動性池。</p>
+<p>匯率（價格）不是由訂單決定的，而是由池中兩種資產的「相對規模」決定的。
+機制會始終維持 <span
+class="math inline"><em>e</em><em>t</em><em>h</em>_<em>p</em><em>o</em><em>o</em><em>l</em> * <em>t</em><em>o</em><em>k</em><em>e</em><em>n</em>_<em>p</em><em>o</em><em>o</em><em>l</em> = <em>k</em></span>
+這個不變量 (Invariant) 。這個 <span
+class="math inline"><em>k</em></span>
+值只會在流動性被增加或移除時才會改變。</p>
+<h5 id="eth-leftrightarrow-erc20-交易">1. ETH <span
+class="math inline">↔︎</span> ERC20 交易</h5>
+<p><strong>以 ETH 換 OMG 為例（ETH <span class="math inline">→</span>
+Token）：</strong></p>
+<p>假設一個資金池最開始由流動性提供者 (LP) 存入了 10 ETH 和 500
+OMG。</p>
+<ol type="1">
 <li><p><strong>初始狀態：</strong></p>
 <ul>
 <li><code>ETH_pool</code> = 10</li>
 <li><code>OMG_pool</code> = 500</li>
-<li><code>Invariant (k)</code> = $10 * 500 = 5000$</li>
-</ul>
-</li>
+<li><code>Invariant (k)</code> = <span
+class="math inline">10 * 500 = 5000</span></li>
+</ul></li>
 <li><p><strong>交易發生：</strong></p>
 <ul>
 <li>一位買家發送了 <strong>1 ETH</strong> 到合約</li>
-<li>合約會先收取 0.3% 的手續費（<em>範例中使用 0.25%</em>），即 0.0025 ETH</li>
+<li>合約會先收取 0.3% 的手續費（<em>範例中使用 0.25%</em>），即 0.0025
+ETH</li>
 <li>剩下的 0.9975 ETH 加入 ETH 池中</li>
-<li><code>ETH_pool</code> (新) = $10 + 0.9975 = 10.9975$</li>
-</ul>
-</li>
+<li><code>ETH_pool</code> (新) = <span
+class="math inline">10 + 0.9975 = 10.9975</span></li>
+</ul></li>
 <li><p><strong>計算兌換：</strong></p>
 <ul>
-<li>為了維持 $k=5000$，<code>OMG_pool</code> 的新數量必須是：</li>
-<li><code>OMG_pool</code> (新) = $k / ETH_pool(\text{新}) = 5000 / 10.9975 = 454.65$ OMG</li>
-<li>買家收到的 OMG = <code>OMG_pool</code> (舊) - <code>OMG_pool</code> (新) = $500 - 454.65 = 45.35$ OMG</li>
-</ul>
-</li>
+<li>為了維持 <span
+class="math inline"><em>k</em> = 5000</span>，<code>OMG_pool</code>
+的新數量必須是：</li>
+<li><code>OMG_pool</code> (新) = <span
+class="math inline"><em>k</em>/<em>E</em><em>T</em><em>H</em>_<em>p</em><em>o</em><em>o</em><em>l</em>(新) = 5000/10.9975 = 454.65</span>
+OMG</li>
+<li>買家收到的 OMG = <code>OMG_pool</code> (舊) - <code>OMG_pool</code>
+(新) = <span class="math inline">500 − 454.65 = 45.35</span> OMG</li>
+</ul></li>
 <li><p><strong>手續費去向：</strong></p>
 <ul>
 <li>交易完成後，之前收取的 0.0025 ETH 手續費會被「加回」流動性池中</li>
-<li><code>ETH_pool</code> (最終) = $10.9975 + 0.0025 = 11$</li>
+<li><code>ETH_pool</code> (最終) = <span
+class="math inline">10.9975 + 0.0025 = 11</span></li>
 <li><code>OMG_pool</code> (最終) = 454.65</li>
-<li><strong>新的 Invariant (k)</strong> = $11 * 454.65 = 5001.15$</li>
-</ul>
-</li>
+<li><strong>新的 Invariant (k)</strong> = <span
+class="math inline">11 * 454.65 = 5001.15</span></li>
+</ul></li>
 </ol>
-<p>你會發現 $k$ 值略微增加了！這就是 LP (流動性提供者) 的利潤來源。</p>
-<p><strong>反向的 Token $\rightarrow$ ETH 交易</strong> (<code>tokenToEthSwap</code>) 也是同理，代幣池增加，ETH 池按比例減少，價格隨之變動。</p>
-<h5 id="2-ERC20-leftrightarrow-ERC20-交易"><a href="#2-ERC20-leftrightarrow-ERC20-交易" class="headerlink" title="2. ERC20 $\leftrightarrow$ ERC20 交易"></a>2. ERC20 $\leftrightarrow$ ERC20 交易</h5><p>Uniswap V1 不支援 ERC20 之間的「直接」兌換。但由於 ETH 是所有 ERC20 代幣的通用交易對，因此可以把 ETH 當作中介。</p>
+<p>你會發現 <span class="math inline"><em>k</em></span>
+值略微增加了！這就是 LP (流動性提供者) 的利潤來源。</p>
+<p><strong>反向的 Token <span class="math inline">→</span> ETH
+交易</strong> (<code>tokenToEthSwap</code>) 也是同理，代幣池增加，ETH
+池按比例減少，價格隨之變動。</p>
+<h5 id="erc20-leftrightarrow-erc20-交易">2. ERC20 <span
+class="math inline">↔︎</span> ERC20 交易</h5>
+<p>Uniswap V1 不支援 ERC20 之間的「直接」兌換。但由於 ETH 是所有 ERC20
+代幣的通用交易對，因此可以把 ETH 當作中介。</p>
 <p>例如，要將 OMG 換成 KNC：</p>
-<ol>
-<li>買家在 <strong>OMG 交易所</strong>上呼叫 <code>tokenToTokenSwap()</code></li>
+<ol type="1">
+<li>買家在 <strong>OMG 交易所</strong>上呼叫
+<code>tokenToTokenSwap()</code></li>
 <li>OMG 交易所會將買家的 OMG 兌換成 ETH</li>
-<li>OMG 交易所<strong>並不會</strong>把 ETH 還給買家，而是拿著這筆 ETH，去呼叫 <strong>KNC 交易所</strong>的 <code>ethToTokenTransfer()</code> 函數</li>
-<li>KNC 交易所收到 ETH，將其兌換成 KNC，然後將 KNC 直接發送給「原始買家」的地址</li>
+<li>OMG 交易所<strong>並不會</strong>把 ETH 還給買家，而是拿著這筆
+ETH，去呼叫 <strong>KNC 交易所</strong>的
+<code>ethToTokenTransfer()</code> 函數</li>
+<li>KNC 交易所收到 ETH，將其兌換成 KNC，然後將 KNC
+直接發送給「原始買家」的地址</li>
 </ol>
-<p>這整個過程在同一筆交易中完成，用戶體驗上就像是直接用 OMG 換到了 KNC。</p>
-<h4 id="流動性提供者-LP-的世界"><a href="#流動性提供者-LP-的世界" class="headerlink" title="流動性提供者 (LP) 的世界"></a>流動性提供者 (LP) 的世界</h4><p>Uniswap 的資金池並非憑空而來，它們依賴「流動性提供者」(Liquidity Providers, LP) 提供資金。</p>
-<h5 id="1-增加與移除流動性"><a href="#1-增加與移除流動性" class="headerlink" title="1. 增加與移除流動性"></a>1. 增加與移除流動性</h5><ul>
-<li><strong>增加流動性 (Add Liquidity)：</strong><ul>
+<p>這整個過程在同一筆交易中完成，用戶體驗上就像是直接用 OMG 換到了
+KNC。</p>
+<h4 id="流動性提供者-lp-的世界">流動性提供者 (LP) 的世界</h4>
+<p>Uniswap 的資金池並非憑空而來，它們依賴「流動性提供者」(Liquidity
+Providers, LP) 提供資金。</p>
+<h5 id="增加與移除流動性">1. 增加與移除流動性</h5>
+<ul>
+<li><strong>增加流動性 (Add Liquidity)：</strong>
+<ul>
 <li>任何人都可以呼叫 <code>addLiquidity()</code></li>
 <li>提供流動性時，必須存入「等值」的 ETH 和 ERC20 Token</li>
-<li>第一個 LP 負責設定池子的初始匯率。如果匯率設定不合理，套利者會立刻介入，使價格回歸市場平衡。</li>
-</ul>
-</li>
-<li><strong>流動性代幣 (Liquidity Tokens)：</strong><ul>
-<li>當 LP 存入資金時，合約會鑄造 (Mint) 一種「流動性代幣」(LP Token) 給他們。</li>
-<li>LP Token 本身也是一種 ERC20 代幣，它代表了該 LP 在總儲備中所佔的份額。</li>
-</ul>
-</li>
-<li><strong>移除流動性 (Removing Liquidity)：</strong><ul>
-<li>LP 可以隨時銷毀 (Burn) 他們的 LP Token。</li>
-<li>合約會根據他們銷毀的 LP Token 比例，將池中相應份額的 ETH 和 ERC20 Token 退還給他們。</li>
-</ul>
-</li>
-</ul>
-<h5 id="2-LP-的收益：交易手續費"><a href="#2-LP-的收益：交易手續費" class="headerlink" title="2. LP 的收益：交易手續費"></a>2. LP 的收益：交易手續費</h5><p>LP 為什麼要提供流動性？因為他們可以分享交易手續費。</p>
+<li>第一個 LP
+負責設定池子的初始匯率。如果匯率設定不合理，套利者會立刻介入，使價格回歸市場平衡。</li>
+</ul></li>
+<li><strong>流動性代幣 (Liquidity Tokens)：</strong>
 <ul>
-<li><strong>ETH $\leftrightarrow$ ERC20 交易：</strong> 支付 0.3% 的手續費（ETH 支付 ETH，ERC20 支付 ERC20）</li>
-<li><strong>ERC20 $\leftrightarrow$ ERC20 交易：</strong> 總共會被收兩次費用（一次在輸入交易所，一次在輸出交易所），總費用約為 0.5991%</li>
+<li>當 LP 存入資金時，合約會鑄造 (Mint) 一種「流動性代幣」(LP Token)
+給他們。</li>
+<li>LP Token 本身也是一種 ERC20 代幣，它代表了該 LP
+在總儲備中所佔的份額。</li>
+</ul></li>
+<li><strong>移除流動性 (Removing Liquidity)：</strong>
+<ul>
+<li>LP 可以隨時銷毀 (Burn) 他們的 LP Token。</li>
+<li>合約會根據他們銷毀的 LP Token 比例，將池中相應份額的 ETH 和 ERC20
+Token 退還給他們。</li>
+</ul></li>
 </ul>
-<p>這些手續費會<strong>立即存入流動性儲備中</strong> 。由於總儲備增加了，但 LP Token 總量不變，這意味著每單位 LP Token 的價值都增加了。這就是 LP 的利潤。</p>
-<h5 id="3-LP-的風險：無常損失-Impermanent-Loss"><a href="#3-LP-的風險：無常損失-Impermanent-Loss" class="headerlink" title="3. LP 的風險：無常損失 (Impermanent Loss)"></a>3. LP 的風險：無常損失 (Impermanent Loss)</h5><ul>
-<li><strong>無常損失 (IL) </strong>：指的是當你存入資金池的代幣，其價格比率相較於存入時發生變化，所導致的價值損失。</li>
-<li><strong>舉例：</strong><ul>
+<h5 id="lp-的收益交易手續費">2. LP 的收益：交易手續費</h5>
+<p>LP 為什麼要提供流動性？因為他們可以分享交易手續費。</p>
+<ul>
+<li><strong>ETH <span class="math inline">↔︎</span> ERC20 交易：</strong>
+支付 0.3% 的手續費（ETH 支付 ETH，ERC20 支付 ERC20）</li>
+<li><strong>ERC20 <span class="math inline">↔︎</span> ERC20
+交易：</strong>
+總共會被收兩次費用（一次在輸入交易所，一次在輸出交易所），總費用約為
+0.5991%</li>
+</ul>
+<p>這些手續費會<strong>立即存入流動性儲備中</strong>
+。由於總儲備增加了，但 LP Token 總量不變，這意味著每單位 LP Token
+的價值都增加了。這就是 LP 的利潤。</p>
+<h5 id="lp-的風險無常損失-impermanent-loss">3. LP 的風險：無常損失
+(Impermanent Loss)</h5>
+<ul>
+<li><strong>無常損失 (IL)
+</strong>：指的是當你存入資金池的代幣，其價格比率相較於存入時發生變化，所導致的價值損失。</li>
+<li><strong>舉例：</strong>
+<ul>
 <li>你存入 10 ETH 和 1000 TokenA (此時 1 ETH = 100 TokenA)</li>
-<li>此時 $k = 10 * 1000 = 10000$</li>
+<li>此時 <span
+class="math inline"><em>k</em> = 10 * 1000 = 10000</span></li>
 <li>一段時間後，市場價格變為 1 ETH = 200 TokenA</li>
-<li>套利者會介入，直到池中的比例也變為 1:200。此時池中會變為 7.071 ETH 和 1414.21 TokenA (因為 $x*y=10000$ 且 $x=200y$)</li>
-<li><strong>如果你現在贖回：</strong> 你會得到 7.071 ETH 和 1414.21 TokenA。以 TokenA 計價，總價值為 $(7.071 * 200) + 1414.21 = 2828.41$ TokenA</li>
-<li><strong>如果你當初沒存入 (HODL)：</strong> 你會擁有 10 ETH 和 1000 TokenA。以 TokenA 計價，總價值為 $(10 * 200) + 1000 = 3000$ TokenA</li>
-<li><strong>損失：</strong> $3000 - 2828.41 = 171.59$ TokenA，這就是無常損失</li>
+<li>套利者會介入，直到池中的比例也變為 1:200。此時池中會變為 7.071 ETH
+和 1414.21 TokenA (因為 <span
+class="math inline"><em>x</em> * <em>y</em> = 10000</span> 且 <span
+class="math inline"><em>x</em> = 200<em>y</em></span>)</li>
+<li><strong>如果你現在贖回：</strong> 你會得到 7.071 ETH 和 1414.21
+TokenA。以 TokenA 計價，總價值為 <span
+class="math inline">(7.071 * 200) + 1414.21 = 2828.41</span> TokenA</li>
+<li><strong>如果你當初沒存入 (HODL)：</strong> 你會擁有 10 ETH 和 1000
+TokenA。以 TokenA 計價，總價值為 <span
+class="math inline">(10 * 200) + 1000 = 3000</span> TokenA</li>
+<li><strong>損失：</strong> <span
+class="math inline">3000 − 2828.41 = 171.59</span>
+TokenA，這就是無常損失</li>
+</ul></li>
 </ul>
-</li>
-</ul>
-<p>LP 獲得的交易手續費，本質上就是為了補償他們承擔這種價格波動（無常損失）的風險。</p>
-<h4 id="結語"><a href="#結語" class="headerlink" title="結語"></a>結語</h4><p>Uniswap V1 以極簡的設計、卓越的 Gas 效率和革命性的 AMM 理念，為 DeFi 世界奠定了不可或缺的基石。<br>它雖然存在一些問題（例如必須以 ETH 為中介、無常損失），但也為後來的 V2 和 V3 版本指明了演進的方向。</p>
-<hr>
+<p>LP
+獲得的交易手續費，本質上就是為了補償他們承擔這種價格波動（無常損失）的風險。</p>
+<h4 id="結語">結語</h4>
+<p>Uniswap V1 以極簡的設計、卓越的 Gas 效率和革命性的 AMM 理念，為 DeFi
+世界奠定了不可或缺的基石。它雖然存在一些問題（例如必須以 ETH
+為中介、無常損失），但也為後來的 V2 和 V3 版本指明了演進的方向。</p>
 
                 
               </div>

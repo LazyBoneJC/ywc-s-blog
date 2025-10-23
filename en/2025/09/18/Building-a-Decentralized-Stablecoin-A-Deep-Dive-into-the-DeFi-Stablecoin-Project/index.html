@@ -308,64 +308,193 @@
             
               <div class="markdown-body">
                 
-                <p>Decentralized Finance (DeFi) has opened up a world of possibilities, and at its core lies the need for stability in a volatile market. Stablecoins are the bedrock of this new financial landscape, providing a reliable medium of exchange and store of value. While many stablecoins exist, building one from the ground up is an incredible learning experience that reveals the intricate mechanics of DeFi protocols.</p>
-<p>In this post, I’ll walk you through my journey of creating the DeFi Stablecoin project, a decentralized stablecoin pegged to the US Dollar. We’ll explore the architecture, the technical challenges I faced, and the solutions I implemented. Whether you’re a seasoned Solidity developer or just starting, I hope this deep dive offers valuable insights.</p>
+                <p>Decentralized Finance (DeFi) has opened up a world of possibilities,
+and at its core lies the need for stability in a volatile market.
+Stablecoins are the bedrock of this new financial landscape, providing a
+reliable medium of exchange and store of value. While many stablecoins
+exist, building one from the ground up is an incredible learning
+experience that reveals the intricate mechanics of DeFi protocols.</p>
+<p>In this post, I’ll walk you through my journey of creating the DeFi
+Stablecoin project, a decentralized stablecoin pegged to the US Dollar.
+We’ll explore the architecture, the technical challenges I faced, and
+the solutions I implemented. Whether you’re a seasoned Solidity
+developer or just starting, I hope this deep dive offers valuable
+insights.</p>
 <img src="/ywc-s-blog/2025/09/18/Building-a-Decentralized-Stablecoin-A-Deep-Dive-into-the-DeFi-Stablecoin-Project/stablecoins.png" srcset="/ywc-s-blog/img/loading.gif" lazyload class="" title="Stablecoin">
-<h2 id="Project-Overview"><a href="#Project-Overview" class="headerlink" title="Project Overview"></a>Project Overview</h2><p>The goal of the DeFi Stablecoin project was to create a crypto-collateralized, decentralized stablecoin called DSC. The core idea is simple: users can deposit volatile assets like ETH and BTC as collateral to mint DSC tokens, which are designed to maintain a 1:1 peg with the US Dollar.</p>
-<p>The system is built on a principle of <strong>overcollateralization</strong>. This means that the value of the collateral held in the system must always be greater than the value of the DSC tokens that have been minted. This is crucial for maintaining the peg and ensuring the system’s solvency.</p>
+<h2 id="project-overview">Project Overview</h2>
+<p>The goal of the DeFi Stablecoin project was to create a
+crypto-collateralized, decentralized stablecoin called DSC. The core
+idea is simple: users can deposit volatile assets like ETH and BTC as
+collateral to mint DSC tokens, which are designed to maintain a 1:1 peg
+with the US Dollar.</p>
+<p>The system is built on a principle of
+<strong>overcollateralization</strong>. This means that the value of the
+collateral held in the system must always be greater than the value of
+the DSC tokens that have been minted. This is crucial for maintaining
+the peg and ensuring the system’s solvency.</p>
 <p>Key features of the project include:</p>
 <ul>
-<li><strong>Collateralized Debt Positions (CDPs):</strong> Users lock up approved collateral to mint DSC.</li>
-<li><strong>Health Factor:</strong> Each user’s position has a “health factor” that reflects the ratio of their collateral’s value to their minted debt. If this factor falls below a certain threshold, their position is at risk of liquidation.</li>
-<li><strong>Liquidation:</strong> To protect the system, undercollateralized positions can be liquidated by other users, who are incentivized with a bonus.</li>
-<li><strong>Chainlink Price Feeds:</strong> The system relies on Chainlink’s decentralized oracles for accurate, real-time price data of the collateral assets.</li>
+<li><strong>Collateralized Debt Positions (CDPs):</strong> Users lock up
+approved collateral to mint DSC.</li>
+<li><strong>Health Factor:</strong> Each user’s position has a “health
+factor” that reflects the ratio of their collateral’s value to their
+minted debt. If this factor falls below a certain threshold, their
+position is at risk of liquidation.</li>
+<li><strong>Liquidation:</strong> To protect the system,
+undercollateralized positions can be liquidated by other users, who are
+incentivized with a bonus.</li>
+<li><strong>Chainlink Price Feeds:</strong> The system relies on
+Chainlink’s decentralized oracles for accurate, real-time price data of
+the collateral assets.</li>
 </ul>
-<p>The project is built with Solidity for the smart contracts, Foundry as the development and testing framework, and leverages OpenZeppelin’s battle-tested contracts for security.</p>
-<h2 id="Smart-Contract-Architecture"><a href="#Smart-Contract-Architecture" class="headerlink" title="Smart Contract Architecture"></a>Smart Contract Architecture</h2><p>The system is comprised of three main contracts, each with a specific role:</p>
-<h3 id="DecentralizedStableCoin-sol"><a href="#DecentralizedStableCoin-sol" class="headerlink" title="DecentralizedStableCoin.sol"></a><code>DecentralizedStableCoin.sol</code></h3><p>This is the ERC20 token contract for our stablecoin, DSC. It’s a standard <code>ERC20Burnable</code> token from OpenZeppelin, which means tokens can be minted and burned. A critical design choice was to make it <code>Ownable</code>, with the ownership transferred to the <code>DSCEngine</code> contract upon deployment. This ensures that only the core engine can create or destroy DSC tokens, preventing unauthorized minting.</p>
-<h3 id="DSCEngine-sol"><a href="#DSCEngine-sol" class="headerlink" title="DSCEngine.sol"></a><code>DSCEngine.sol</code></h3><p>This is the heart of the system. The <code>DSCEngine</code> contract handles all the core logic. Its responsibilities include:</p>
+<p>The project is built with Solidity for the smart contracts, Foundry
+as the development and testing framework, and leverages OpenZeppelin’s
+battle-tested contracts for security.</p>
+<h2 id="smart-contract-architecture">Smart Contract Architecture</h2>
+<p>The system is comprised of three main contracts, each with a specific
+role:</p>
+<h3
+id="decentralizedstablecoin.sol"><code>DecentralizedStableCoin.sol</code></h3>
+<p>This is the ERC20 token contract for our stablecoin, DSC. It’s a
+standard <code>ERC20Burnable</code> token from OpenZeppelin, which means
+tokens can be minted and burned. A critical design choice was to make it
+<code>Ownable</code>, with the ownership transferred to the
+<code>DSCEngine</code> contract upon deployment. This ensures that only
+the core engine can create or destroy DSC tokens, preventing
+unauthorized minting.</p>
+<h3 id="dscengine.sol"><code>DSCEngine.sol</code></h3>
+<p>This is the heart of the system. The <code>DSCEngine</code> contract
+handles all the core logic. Its responsibilities include:</p>
 <ul>
 <li>Managing collateral deposits and withdrawals.</li>
 <li>Minting new DSC tokens against collateral.</li>
 <li>Burning DSC tokens when a user redeems their collateral.</li>
 <li>Calculating the health factor of a user’s position.</li>
-<li>Handling the liquidation process for undercollateralized positions.</li>
+<li>Handling the liquidation process for undercollateralized
+positions.</li>
 </ul>
-<h3 id="OracleLib-sol"><a href="#OracleLib-sol" class="headerlink" title="OracleLib.sol"></a><code>OracleLib.sol</code></h3><p>A simple but crucial library for interacting with Chainlink price feeds. Its primary function is to check for “stale” prices. If a price feed hasn’t been updated within a specified timeout period (3 hours in this case), the library will revert the transaction. This is a deliberate safety measure to freeze the system and prevent it from operating on outdated, and therefore potentially inaccurate, price information.</p>
-<h2 id="Development-Challenges-and-Solutions"><a href="#Development-Challenges-and-Solutions" class="headerlink" title="Development Challenges and Solutions"></a>Development Challenges and Solutions</h2><p>Building this project was not without its hurdles. Here are some of the key challenges and how I tackled them:</p>
-<h3 id="1-Ensuring-Collateral-Health-and-Preventing-Insolvency"><a href="#1-Ensuring-Collateral-Health-and-Preventing-Insolvency" class="headerlink" title="1. Ensuring Collateral Health and Preventing Insolvency"></a>1. Ensuring Collateral Health and Preventing Insolvency</h3><p>The biggest challenge in any stablecoin project is maintaining solvency. If the value of the collateral drops below the value of the minted stablecoins, the peg can break.</p>
+<h3 id="oraclelib.sol"><code>OracleLib.sol</code></h3>
+<p>A simple but crucial library for interacting with Chainlink price
+feeds. Its primary function is to check for “stale” prices. If a price
+feed hasn’t been updated within a specified timeout period (3 hours in
+this case), the library will revert the transaction. This is a
+deliberate safety measure to freeze the system and prevent it from
+operating on outdated, and therefore potentially inaccurate, price
+information.</p>
+<h2 id="development-challenges-and-solutions">Development Challenges and
+Solutions</h2>
+<p>Building this project was not without its hurdles. Here are some of
+the key challenges and how I tackled them:</p>
+<h3 id="ensuring-collateral-health-and-preventing-insolvency">1.
+Ensuring Collateral Health and Preventing Insolvency</h3>
+<p>The biggest challenge in any stablecoin project is maintaining
+solvency. If the value of the collateral drops below the value of the
+minted stablecoins, the peg can break.</p>
 <ul>
-<li><strong>Problem:</strong> How do you ensure that every user’s position remains overcollateralized?</li>
-<li><strong>Solution:</strong> The concept of a “health factor.” I created a function, <code>_calculateHealthFactor</code>, that takes the user’s total minted DSC and the USD value of their collateral as input. The system enforces a <code>LIQUIDATION_THRESHOLD</code> of 50%, meaning the collateral value must be at least 150% of the minted DSC value. An internal function, <code>_revertIfHealthFactorIsBroken</code>, is called in every function that could alter a user’s health factor, like <code>mintDsc</code> and <code>redeemCollateral</code>. This function reverts the transaction if the health factor falls below the minimum threshold.</li>
-<li><strong>Health Factor = (Total Collateral Value * Weighted Average Liquidation Threshold) / Total Borrow Value</strong></li>
+<li><strong>Problem:</strong> How do you ensure that every user’s
+position remains overcollateralized?</li>
+<li><strong>Solution:</strong> The concept of a “health factor.” I
+created a function, <code>_calculateHealthFactor</code>, that takes the
+user’s total minted DSC and the USD value of their collateral as input.
+The system enforces a <code>LIQUIDATION_THRESHOLD</code> of 50%, meaning
+the collateral value must be at least 150% of the minted DSC value. An
+internal function, <code>_revertIfHealthFactorIsBroken</code>, is called
+in every function that could alter a user’s health factor, like
+<code>mintDsc</code> and <code>redeemCollateral</code>. This function
+reverts the transaction if the health factor falls below the minimum
+threshold.</li>
+<li><strong>Health Factor = (Total Collateral Value * Weighted Average
+Liquidation Threshold) / Total Borrow Value</strong></li>
 </ul>
-<h3 id="2-Handling-Price-Feeds-and-Oracle-Security"><a href="#2-Handling-Price-Feeds-and-Oracle-Security" class="headerlink" title="2. Handling Price Feeds and Oracle Security"></a>2. Handling Price Feeds and Oracle Security</h3><p>Accurate price data is non-negotiable for a stablecoin. Using unreliable or stale data could lead to catastrophic failure.</p>
+<h3 id="handling-price-feeds-and-oracle-security">2. Handling Price
+Feeds and Oracle Security</h3>
+<p>Accurate price data is non-negotiable for a stablecoin. Using
+unreliable or stale data could lead to catastrophic failure.</p>
 <ul>
-<li><strong>Problem:</strong> How do you protect against stale or manipulated price feeds?</li>
-<li><strong>Solution:</strong> As mentioned earlier, I created the <code>OracleLib.sol</code> library. This library includes a <code>staleCheckLatestRoundData</code> function that wraps Chainlink’s <code>latestRoundData</code> function. It checks the <code>updatedAt</code> timestamp of the price feed and reverts if the data is older than a predefined <code>TIMEOUT</code>. While freezing the protocol may seem drastic, it’s a far better alternative than allowing it to operate with potentially dangerous data.</li>
+<li><strong>Problem:</strong> How do you protect against stale or
+manipulated price feeds?</li>
+<li><strong>Solution:</strong> As mentioned earlier, I created the
+<code>OracleLib.sol</code> library. This library includes a
+<code>staleCheckLatestRoundData</code> function that wraps Chainlink’s
+<code>latestRoundData</code> function. It checks the
+<code>updatedAt</code> timestamp of the price feed and reverts if the
+data is older than a predefined <code>TIMEOUT</code>. While freezing the
+protocol may seem drastic, it’s a far better alternative than allowing
+it to operate with potentially dangerous data.</li>
 </ul>
-<h3 id="3-Incentivizing-Liquidations"><a href="#3-Incentivizing-Liquidations" class="headerlink" title="3. Incentivizing Liquidations"></a>3. Incentivizing Liquidations</h3><p>A robust liquidation mechanism is essential for a healthy stablecoin. Without it, undercollateralized positions would linger, putting the entire system at risk.</p>
+<h3 id="incentivizing-liquidations">3. Incentivizing Liquidations</h3>
+<p>A robust liquidation mechanism is essential for a healthy stablecoin.
+Without it, undercollateralized positions would linger, putting the
+entire system at risk.</p>
 <ul>
-<li><strong>Problem:</strong> Why would someone spend their gas and capital to liquidate another user’s position?</li>
-<li><strong>Solution:</strong> A <code>LIQUIDATION_BONUS</code>. When a liquidator repays a portion of the unhealthy debt, they receive the underlying collateral plus a 10% bonus. This creates a clear financial incentive for third parties to monitor the system and liquidate risky positions, effectively crowdsourcing the system’s stability.</li>
+<li><strong>Problem:</strong> Why would someone spend their gas and
+capital to liquidate another user’s position?</li>
+<li><strong>Solution:</strong> A <code>LIQUIDATION_BONUS</code>. When a
+liquidator repays a portion of the unhealthy debt, they receive the
+underlying collateral plus a 10% bonus. This creates a clear financial
+incentive for third parties to monitor the system and liquidate risky
+positions, effectively crowdsourcing the system’s stability.</li>
 </ul>
-<p>It’s worth noting a limitation of this simplified model: if the collateral value were to plummet so quickly that positions become 100% or less collateralized before anyone can be liquidated, the liquidation bonus would no longer be an effective incentive. More advanced systems like MakerDAO have additional mechanisms, like debt auctions, to handle such “black swan” events.</p>
-<h3 id="4-Security-Best-Practices"><a href="#4-Security-Best-Practices" class="headerlink" title="4. Security Best Practices"></a>4. Security Best Practices</h3><p>Security is paramount in DeFi. A single vulnerability can lead to millions in losses. I implemented several layers of security measures and testing strategies to ensure the robustness of the protocol.</p>
+<p>It’s worth noting a limitation of this simplified model: if the
+collateral value were to plummet so quickly that positions become 100%
+or less collateralized before anyone can be liquidated, the liquidation
+bonus would no longer be an effective incentive. More advanced systems
+like MakerDAO have additional mechanisms, like debt auctions, to handle
+such “black swan” events.</p>
+<h3 id="security-best-practices">4. Security Best Practices</h3>
+<p>Security is paramount in DeFi. A single vulnerability can lead to
+millions in losses. I implemented several layers of security measures
+and testing strategies to ensure the robustness of the protocol.</p>
 <ul>
-<li><strong>Problem:</strong> How do you write secure, robust smart contracts and rigorously test for vulnerabilities?</li>
-<li><strong>Solutions:</strong><ul>
-<li><strong>Checks-Effects-Interactions (CEI) Pattern:</strong> I followed this pattern throughout the <code>DSCEngine</code> contract. The contract first performs all necessary checks (e.g., health factor checks), then makes state changes (e.g., updating balances), and only then interacts with other contracts (e.g., transferring tokens). This pattern, along with OpenZeppelin’s <code>ReentrancyGuard</code>, helps prevent re-entrancy attacks.</li>
-<li><strong>Handler-Based Fuzz Testing:</strong> Beyond standard unit tests, I implemented handler-based fuzz testing using Foundry. This is a powerful technique where a fuzzer throws thousands of random, but valid, transactions at the contracts to uncover edge cases and unexpected states.<ul>
-<li>The <code>Handler.t.sol</code> contract defines a set of actions that users can perform, such as depositing collateral, minting DSC, and redeeming collateral, using randomized parameters.</li>
-<li>The <code>Invariants.t.sol</code> contract then defines the core properties, or “invariants,” of the system that must <em>always</em> remain true. For this project, the most crucial invariant is that the total value of collateral in the protocol must always be greater than or equal to the total supply of minted DSC. Another invariant ensures that all getter functions never revert.</li>
-<li>Foundry’s fuzzer calls the functions in the <code>Handler</code> contract in random sequences and amounts. After each call, it checks if any of the defined invariants in <code>Invariants.t.sol</code> have been broken. This provides a much higher degree of confidence in the system’s robustness compared to writing individual test cases alone.</li>
+<li><strong>Problem:</strong> How do you write secure, robust smart
+contracts and rigorously test for vulnerabilities?</li>
+<li><strong>Solutions:</strong>
+<ul>
+<li><strong>Checks-Effects-Interactions (CEI) Pattern:</strong> I
+followed this pattern throughout the <code>DSCEngine</code> contract.
+The contract first performs all necessary checks (e.g., health factor
+checks), then makes state changes (e.g., updating balances), and only
+then interacts with other contracts (e.g., transferring tokens). This
+pattern, along with OpenZeppelin’s <code>ReentrancyGuard</code>, helps
+prevent re-entrancy attacks.</li>
+<li><strong>Handler-Based Fuzz Testing:</strong> Beyond standard unit
+tests, I implemented handler-based fuzz testing using Foundry. This is a
+powerful technique where a fuzzer throws thousands of random, but valid,
+transactions at the contracts to uncover edge cases and unexpected
+states.
+<ul>
+<li>The <code>Handler.t.sol</code> contract defines a set of actions
+that users can perform, such as depositing collateral, minting DSC, and
+redeeming collateral, using randomized parameters.</li>
+<li>The <code>Invariants.t.sol</code> contract then defines the core
+properties, or “invariants,” of the system that must <em>always</em>
+remain true. For this project, the most crucial invariant is that the
+total value of collateral in the protocol must always be greater than or
+equal to the total supply of minted DSC. Another invariant ensures that
+all getter functions never revert.</li>
+<li>Foundry’s fuzzer calls the functions in the <code>Handler</code>
+contract in random sequences and amounts. After each call, it checks if
+any of the defined invariants in <code>Invariants.t.sol</code> have been
+broken. This provides a much higher degree of confidence in the system’s
+robustness compared to writing individual test cases alone.</li>
+</ul></li>
+</ul></li>
 </ul>
-</li>
-</ul>
-</li>
-</ul>
-<h2 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h2><p>Building the DeFi Stablecoin project has been a fantastic learning experience. It provided a hands-on understanding of the core mechanisms that power some of the largest protocols in DeFi, like MakerDAO’s DAI. From the intricacies of fixed-point math in Solidity to the critical importance of oracle security and robust liquidation mechanisms, this project has been a practical application of DeFi’s foundational principles.</p>
-<p>While this project is a simplified model, it serves as a strong foundation for anyone looking to understand or build upon the concepts of decentralized stablecoins. I encourage you to explore the <a target="_blank" rel="noopener" href="https://github.com/lazybonejc/DeFi_Stablecoin">source code on GitHub</a> and share your thoughts. The future of finance is being built today, and every line of code is a step towards a more open and decentralized world.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>Building the DeFi Stablecoin project has been a fantastic learning
+experience. It provided a hands-on understanding of the core mechanisms
+that power some of the largest protocols in DeFi, like MakerDAO’s DAI.
+From the intricacies of fixed-point math in Solidity to the critical
+importance of oracle security and robust liquidation mechanisms, this
+project has been a practical application of DeFi’s foundational
+principles.</p>
+<p>While this project is a simplified model, it serves as a strong
+foundation for anyone looking to understand or build upon the concepts
+of decentralized stablecoins. I encourage you to explore the <a
+target="_blank" rel="noopener" href="https://github.com/lazybonejc/DeFi_Stablecoin">source code on
+GitHub</a> and share your thoughts. The future of finance is being built
+today, and every line of code is a step towards a more open and
+decentralized world.</p>
 
                 
               </div>
