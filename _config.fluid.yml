@@ -13,13 +13,12 @@ language: [zh-TW, en]
 timezone: "Asia/Taipei"
 
 # URL
-## Set your site url here. For example, if you use GitHub Page, set url as 'https://username.github.io/project'
 url: https://lazybonejc.github.io/ywc-s-blog/
 permalink: :year/:month/:day/:title/
 permalink_defaults:
 pretty_urls:
-  trailing_index: true # Set to false to remove trailing 'index.html' from permalinks
-  trailing_html: true # Set to false to remove trailing '.html' from permalinks
+  trailing_index: true
+  trailing_html: true
 
 # Directory
 source_dir: source
@@ -32,12 +31,12 @@ i18n_dir: :lang
 skip_render:
 
 # Writing
-new_post_name: :title.md # File name of new posts
+new_post_name: :title.md
 default_layout: post
-titlecase: false # Transform title into titlecase
+titlecase: false
 external_link:
-  enable: true # Open external links in new tab
-  field: site # Apply to the whole site
+  enable: true
+  field: site
   exclude: ""
 filename_case: 0
 render_drafts: false
@@ -57,9 +56,6 @@ prismjs:
   tab_replace: ""
 
 # Home page setting
-# path: Root path for your blogs index page. (default = '')
-# per_page: Posts displayed per page. (0 = disable pagination)
-# order_by: Posts order. (Order by date descending by default)
 index_generator:
   path: ""
   per_page: 10
@@ -71,47 +67,41 @@ category_map:
 tag_map:
 
 # Metadata elements
-## https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meta
 meta_generator: true
 
 # Date / Time format
-## Hexo uses Moment.js to parse and display date
-## You can customize the date format as defined in
-## http://momentjs.com/docs/#/displaying/format/
 date_format: YYYY-MM-DD
 time_format: HH:mm:ss
-## updated_option supports 'mtime', 'date', 'empty'
 updated_option: "mtime"
 
 # Pagination
-## Set per_page to 0 to disable pagination
 per_page: 10
 pagination_dir: page
 
 # Include / Exclude file(s)
-## include:/exclude: options only apply to the 'source/' folder
 include:
 exclude:
 ignore:
 
 # Extensions
-## Plugins: https://hexo.io/plugins/
-## Themes: https://hexo.io/themes/
 theme: fluid
 
 # Deployment
-## Docs: https://hexo.io/docs/one-command-deployment
 deploy:
   type: git
   repo: git@github.com:LazyBoneJC/ywc-s-blog.git
   remote: origin
   branch: main
 
+# --- 以下為主題相關設定 ---
+
 # Slogan(打字機)
 index:
+  banner_img: /img/bitcoin.jpg
+  banner_mask_alpha: 0.5
   slogan:
     enable: true
-    text: Documenting my journey in coding and life.
+    text: "Building secure DApps | Auditing DeFi Protocols."
 
 # Navbar
 navbar:
@@ -123,15 +113,15 @@ web_analytics:
   google:
     measurement_id: G-K8ZMSZDX7L
 
-# About Me
+# About Me (更新區域)
 about:
   enable: true
-  banner_img: /img/default.png
+  banner_img: /img/bitcoin.jpg
   banner_img_height: 60
-  banner_mask_alpha: 0.3
-  avatar: /img/avatar.png
-  name: "Yu-Wei Chang"
-  intro: "A passionate developer and lifelong learner."
+  banner_mask_alpha: 0.6
+  avatar: /img/Azuki_9080.jpg
+  name: "Yu-Wei (Jacky) Chang"
+  intro: "Web3 Full-Stack Engineer | Smart Contract Security Researcher"
   icons:
     - {
         class: "iconfont icon-github-fill",
@@ -152,48 +142,71 @@ about:
 # Mermaid tag
 mermaid:
   enable: true
-  # Available themes: default | dark | forest | neutral
   theme:
     light: default
-    # dark: dark
 
 # i18n
 i18n:
   type: [post, page]
   generator: [index, archive, category, tag]
 
-# mathjax:
-#   tags: none
-#   single_dollars: true
-
 math:
   enable: true
-  per_page: true # 建議開啟，這樣只在需要渲染公式的文章中載入，加速頁面
-  engine: mathjax # 或 katex
+  per_page: true
+  engine: mathjax
 
 mathjax:
   enable: false
-  # enable: true
-  # per_page: false # 建議設為 false，讓它統一處理
-  # v3: true
-  # tags: all
-  # cdn: https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
-  # # 【新增】MathJax 配置（用於傳遞給 MathJax.config.tex）
-  # # 儘管 v3 減少了依賴，但有時仍需確保沒有 legacy code 被觸發
-  # config:
-  #   tex:
-  #     # 這通常是預設，但確保它沒有被設為某些需要 eval 的擴展
-  #     packages: ["base", "ams", "newcommand"]
 
-# marked:
-#   gfm: true
-#   pedantic: false
-#   sanitize: false
-#   # 禁用 Smartypants，這會轉換引號和破折號，可能與 LaTeX 衝突
-#   smartLists: true
-#   smartypants: false
-
-# Fluid 主題配置 (範例，實際名稱可能不同)
 security:
-  # 嘗試將此設為 false
   enable_csp: false
+
+#---------------------------
+# Fluid 主題顏色設定 (Azuki 紅黑風格)
+#---------------------------
+color:
+  # 淺色模式
+  body_bg_color: "#f4f4f4"
+  board_color: "#fff"
+  text_color: "#1a1a1a"
+  sec_text_color: "#718096"
+  post_text_color: "#2c3e50"
+  post_link_color: "#CC1414" # Azuki 紅
+  link_hover_color: "#FF0421" # 亮紅
+  navbar_bg_color: "#121212" # 導航欄變深黑
+  navbar_text_color: "#fff"
+
+  # 深色模式
+  body_bg_color_dark: "#0d1117"
+  board_color_dark: "#161b22"
+  text_color_dark: "#c9d1d9"
+  post_link_color_dark: "#FF0421"
+  link_hover_color_dark: "#FF4D4D"
+  navbar_bg_color_dark: "#010409" # 深色下導航欄全黑
+
+custom_css: [/css/custom.css]
+
+# 1. 首頁 Banner
+# index:
+#   banner_img: /img/bitcoin.jpg
+#   banner_mask_alpha: 0.3
+
+# 2. 文章頁 Banner (所有文章進去後的頂部背景)
+post:
+  banner_img: /img/bitcoin.jpg
+  banner_mask_alpha: 0.3
+
+# 3. 存檔頁 Banner (/archives/)
+archive:
+  banner_img: /img/bitcoin.jpg
+  banner_mask_alpha: 0.3
+
+# 4. 分類頁 Banner (/categories/)
+category:
+  banner_img: /img/bitcoin.jpg
+  banner_mask_alpha: 0.3
+
+# 5. 標籤頁 Banner (/tags/)
+tag:
+  banner_img: /img/bitcoin.jpg
+  banner_mask_alpha: 0.3

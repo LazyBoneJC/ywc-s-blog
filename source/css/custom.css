@@ -1,0 +1,23 @@
+/* 讓導航欄滾動後有一層紅色的底部邊框，增加細節 */
+/* .navbar.scrolling-navbar.top-nav-collapse {
+  border-bottom: 2px solid #ff0421 !important;
+} */
+
+/* 讓關於頁的頭像 Azuki 帶一點紅色外框發光 */
+.about-avatar img {
+  border: 3px solid #ff0421 !important;
+  box-shadow: 0 0 20px rgba(255, 4, 33, 0.4) !important;
+}
+
+/* 修改打字機 Slogan 的游標顏色 */
+.typed-cursor {
+  color: #ff0421 !important;
+}
+
+/* 修改捲軸顏色為暗紅色，符合整體美感 */
+::-webkit-scrollbar-thumb {
+  background-color: #440000 !important;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: #cc1414 !important;
+}
