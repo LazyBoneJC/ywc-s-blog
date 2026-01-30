@@ -9,7 +9,7 @@ description: ""
 keywords: []
 copyright: "Copyright © 2025-present, Yu-Wei Chang. All rights reserved."
 author: Yu-Wei Chang
-language: [zh-TW, en]
+language: [en, zh-TW]
 timezone: "Asia/Taipei"
 
 # URL
@@ -102,7 +102,7 @@ deploy:
 
 # Slogan(打字機)
 index:
-  banner_img: /img/tech_banner.png
+  banner_img: /img/default.png
   banner_mask_alpha: 0.5
   slogan:
     enable: true
@@ -121,7 +121,7 @@ web_analytics:
 # About Me (更新區域)
 about:
   enable: true
-  banner_img: /img/tech_banner.png
+  banner_img: /img/default.png
   banner_img_height: 60
   banner_mask_alpha: 0.6
   avatar: /img/Jacky_Avatar.jpg
@@ -198,20 +198,20 @@ custom_css: [/css/custom.css]
 
 # 2. 文章頁 Banner (所有文章進去後的頂部背景)
 post:
-  banner_img: /img/tech_banner.png
+  banner_img: /img/default.png
   banner_mask_alpha: 0.3
 
 # 3. 存檔頁 Banner (/archives/)
 archive:
-  banner_img: /img/tech_banner.png
+  banner_img: /img/default.png
   banner_mask_alpha: 0.3
 
 # 4. 分類頁 Banner (/categories/)
 category:
-  banner_img: /img/tech_banner.png
+  banner_img: /img/default.png
   banner_mask_alpha: 0.3
 
 # 5. 標籤頁 Banner (/tags/)
 tag:
-  banner_img: /img/tech_banner.png
+  banner_img: /img/default.png
   banner_mask_alpha: 0.3
