@@ -1,0 +1,897 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-TW,en" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/ywc-s-blog/img/fluid.png">
+  <link rel="icon" href="/ywc-s-blog/img/fluid.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#0f172a">
+  <meta name="author" content="Yu-Wei Chang">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="Building Award-Winning Healthcare Technology During my internship at the Institute for Information Industry (III&#x2F;資策會), I had the privilege of contributing to the “iMat for Smart Care” project — a 5G a">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Optimizing an AIoT Data Pipeline: From 20 Seconds to 50 Milliseconds">
+<meta property="og:url" content="https://lazybonejc.github.io/ywc-s-blog/en/2025/11/15/Optimizing-an-AIoT-Data-Pipeline/index.html">
+<meta property="og:site_name" content="ywc&#39;s blog">
+<meta property="og:description" content="Building Award-Winning Healthcare Technology During my internship at the Institute for Information Industry (III&#x2F;資策會), I had the privilege of contributing to the “iMat for Smart Care” project — a 5G a">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2025-11-15T02:00:00.000Z">
+<meta property="article:modified_time" content="2026-01-30T17:51:21.792Z">
+<meta property="article:author" content="Yu-Wei Chang">
+<meta property="article:tag" content="Backend">
+<meta property="article:tag" content="Node.js">
+<meta property="article:tag" content="PostgreSQL">
+<meta property="article:tag" content="RabbitMQ">
+<meta property="article:tag" content="Performance Optimization">
+<meta property="article:tag" content="System Design">
+<meta property="article:tag" content="Docker">
+<meta property="article:tag" content="MQTT">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>Optimizing an AIoT Data Pipeline: From 20 Seconds to 50 Milliseconds - ywc&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/ywc-s-blog/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/ywc-s-blog/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/ywc-s-blog/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/ywc-s-blog/css/custom.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"lazybonejc.github.io","root":"/ywc-s-blog/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":"G-K8ZMSZDX7L"},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/ywc-s-blog/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/ywc-s-blog/js/utils.js" ></script>
+  <script  src="/ywc-s-blog/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=G-K8ZMSZDX7L", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', 'G-K8ZMSZDX7L');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/ywc-s-blog/">
+      <strong>ywchang&#39;s blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/ywc-s-blog/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>Home</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/ywc-s-blog/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>Archives</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/ywc-s-blog/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>Categories</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/ywc-s-blog/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>Tags</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/ywc-s-blog/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>About</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/ywc-s-blog/img/tech_banner.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Optimizing an AIoT Data Pipeline: From 20 Seconds to 50 Milliseconds"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-11-15 10:00" pubdate>
+          November 15, 2025 am
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          412 words
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          4 mins
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">Optimizing an AIoT Data Pipeline: From 20 Seconds to 50 Milliseconds</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h3 id="building-award-winning-healthcare-technology">Building
+Award-Winning Healthcare Technology</h3>
+<p>During my internship at the Institute for Information Industry
+(III/資策會), I had the privilege of contributing to the <strong>“iMat
+for Smart Care”</strong> project — a 5G and AI-enabled Smart Mattress
+Care System. This wasn’t just another internship project; it was a
+system that would eventually be <strong>deployed in Long-Term Care
+Centers, benefiting over 5,400 individuals</strong>.</p>
+<p>Even more rewarding, the project was later recognized with the
+prestigious <strong><a
+target="_blank" rel="noopener" href="https://www.iii.org.tw/zh-TW/news/newsroom/iii-news/439d152b-0597-44d4-858c-145affb8f140">R&amp;D
+100 Award</a></strong> (one of the world’s top 100 technology R&amp;D
+awards) along with a <strong>Silver Medal in the Special Contribution
+Award for Corporate Social Responsibility</strong>.</p>
+<p>But when I joined the project, the system had a critical problem:
+<strong>performance</strong>.</p>
+<hr />
+<h3 id="the-challenge-a-struggling-real-time-system">The Challenge: A
+Struggling Real-Time System</h3>
+<p>The iMat system collected real-time physiological data—respiration
+rate, body movements, and bed occupancy status—from smart mattress
+sensors. This data was processed, stored, and fed into AI models to
+predict user behavior and trigger fall prevention alerts.</p>
+<p>The stakes were high. In a Long-Term Care environment, <strong>delays
+in fall detection could have real consequences</strong>. Yet when I
+joined, a single data pipeline execution was taking <strong>over 20
+seconds</strong>.</p>
+<p>My mission was clear: diagnose the bottlenecks and engineer a
+solution that could operate in real-time.</p>
+<p>This article documents my journey of transforming that struggling
+system into one that processes data in <strong>under 50
+milliseconds</strong> — a <strong>400x performance
+improvement</strong>.</p>
+<hr />
+<h3 id="the-technical-stack">The Technical Stack</h3>
+<table>
+
+<thead>
+<tr>
+<th>Layer</th>
+<th>Technology</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Backend</strong></td>
+<td>Node.js, Express.js</td>
+</tr>
+<tr>
+<td><strong>Messaging</strong></td>
+<td>MQTT (sensor communication), RabbitMQ (async processing)</td>
+</tr>
+<tr>
+<td><strong>Database</strong></td>
+<td>PostgreSQL with TimescaleDB (time-series optimization)</td>
+</tr>
+<tr>
+<td><strong>Containerization</strong></td>
+<td>Docker, Docker Compose</td>
+</tr>
+<tr>
+<td><strong>Process Management</strong></td>
+<td>PM2</td>
+</tr>
+<tr>
+<td><strong>Deployment</strong></td>
+<td>Linux servers, Shell scripts</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="system-architecture-overview">System Architecture Overview</h3>
+<figure class="highlight scss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs scss">Smart Mattress Sensors (IoT Devices)<br>        │<br>        │ MQTT (dozens of readings/second)<br>        ▼<br>┌─────────────────────┐<br>│   MQTT Broker       │  (Mosquitto with TLS)<br>│   (Local Server)    │<br>└─────────────────────┘<br>        │<br>        ▼<br>┌─────────────────────┐<br>│   Node<span class="hljs-selector-class">.js</span> Backend   │  ← Performance bottleneck<br>│   (Data Pipeline)   │<br>└─────────────────────┘<br>        │<br>        ├──────────────────────┐<br>        ▼                      ▼<br>┌─────────────────┐    ┌─────────────────┐<br>│   PostgreSQL    │    │   AI Models     │<br>│   (TimescaleDB) │    │ (Fall Detection)│<br>└─────────────────┘    └─────────────────┘<br>        │<br>        ▼<br>┌─────────────────────┐<br>│   Alert System      │  → Caregiver notifications<br>└─────────────────────┘<br></code></pre></td></tr></table></figure>
+<hr />
+<h3 id="phase-1-diagnosing-the-root-cause">Phase 1: Diagnosing the Root
+Cause</h3>
+<p>Using PM2’s monitoring capabilities along with strategic logging, I
+traced the data flow and identified that the primary bottleneck was in
+the <strong>database layer</strong>.</p>
+<p>The original architecture stored all sensor data in a single table.
+As months of physiological data accumulated, this table grew to millions
+of rows. Every query—whether for real-time monitoring or historical
+analysis—was scanning the same massive table.</p>
+<h4 id="the-aha-moment">The “Aha” Moment</h4>
+<p>I realized that optimizing SQL queries was like putting a band-aid on
+a broken leg. The real problem was that we were treating <strong>hot
+data</strong> (recent, frequently accessed) and <strong>cold
+data</strong> (historical, rarely accessed) identically. No matter how
+clever our indexing strategy, querying a 10-million-row table would
+always be slower than querying a 10,000-row table.</p>
+<hr />
+<h3 id="phase-2-hotcold-data-tiering">Phase 2: Hot/Cold Data
+Tiering</h3>
+<p>The solution was to fundamentally redesign the data architecture:</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs sql">┌─────────────────────────────────────────────────────┐<br>│              Incoming Sensor Data                    │<br>└─────────────────────┬───────────────────────────────┘<br>                      ▼<br>┌─────────────────────────────────────────────────────┐<br>│           sensor_data_hot (TimescaleDB)             │<br>│         (<span class="hljs-keyword">Last</span> <span class="hljs-number">24</span> hours <span class="hljs-keyword">only</span> — <span class="hljs-operator">~</span><span class="hljs-number">50</span>K <span class="hljs-keyword">rows</span>)            │<br>│         Blazing fast queries <span class="hljs-keyword">for</span> <span class="hljs-type">real</span><span class="hljs-operator">-</span><span class="hljs-type">time</span> alerts   │<br>└─────────────────────┬───────────────────────────────┘<br>                      │ Automated Cron Job (Hourly)<br>                      ▼<br>┌─────────────────────────────────────────────────────┐<br>│         sensor_data_historical (TimescaleDB)        │<br>│         (Compressed, partitioned <span class="hljs-keyword">by</span> <span class="hljs-type">time</span>)           │<br>│         Optimized <span class="hljs-keyword">for</span> batch analytics               │<br>└─────────────────────────────────────────────────────┘<br></code></pre></td></tr></table></figure>
+<h4 id="implementation">Implementation</h4>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-keyword">const</span> cron = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;node-cron&#x27;</span>);<br><span class="hljs-keyword">const</span> &#123; <span class="hljs-title class_">Pool</span> &#125; = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;pg&#x27;</span>);<br><br><span class="hljs-comment">// Run every hour</span><br>cron.<span class="hljs-title function_">schedule</span>(<span class="hljs-string">&#x27;0 * * * *&#x27;</span>, <span class="hljs-title function_">async</span> () =&gt; &#123;<br>    <span class="hljs-keyword">const</span> client = <span class="hljs-keyword">await</span> pool.<span class="hljs-title function_">connect</span>();<br>    <span class="hljs-keyword">try</span> &#123;<br>        <span class="hljs-keyword">await</span> client.<span class="hljs-title function_">query</span>(<span class="hljs-string">&#x27;BEGIN&#x27;</span>);<br>        <br>        <span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> client.<span class="hljs-title function_">query</span>(<span class="hljs-string">`</span><br><span class="hljs-string">            WITH moved_rows AS (</span><br><span class="hljs-string">                DELETE FROM sensor_data_hot</span><br><span class="hljs-string">                WHERE timestamp &lt; NOW() - INTERVAL &#x27;24 hours&#x27;</span><br><span class="hljs-string">                RETURNING *</span><br><span class="hljs-string">            )</span><br><span class="hljs-string">            INSERT INTO sensor_data_historical</span><br><span class="hljs-string">            SELECT * FROM moved_rows</span><br><span class="hljs-string">        `</span>);<br>        <br>        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">`[Migration] Moved <span class="hljs-subst">$&#123;result.rowCount&#125;</span> rows to historical`</span>);<br>        <span class="hljs-keyword">await</span> client.<span class="hljs-title function_">query</span>(<span class="hljs-string">&#x27;COMMIT&#x27;</span>);<br>    &#125; <span class="hljs-keyword">catch</span> (error) &#123;<br>        <span class="hljs-keyword">await</span> client.<span class="hljs-title function_">query</span>(<span class="hljs-string">&#x27;ROLLBACK&#x27;</span>);<br>        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">error</span>(<span class="hljs-string">&#x27;[Migration] Failed:&#x27;</span>, error);<br>    &#125; <span class="hljs-keyword">finally</span> &#123;<br>        client.<span class="hljs-title function_">release</span>();<br>    &#125;<br>&#125;);<br></code></pre></td></tr></table></figure>
+<h4 id="results">Results</h4>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Before</th>
+<th>After</th>
+<th>Improvement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hot table size</td>
+<td>10M+ rows</td>
+<td>~50K rows</td>
+<td>99.5% reduction</td>
+</tr>
+<tr>
+<td>Pipeline execution</td>
+<td>20+ seconds</td>
+<td>40-50ms</td>
+<td><strong>400x faster</strong></td>
+</tr>
+<tr>
+<td>P99 latency</td>
+<td>45 seconds</td>
+<td>150ms</td>
+<td><strong>300x faster</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="phase-3-asynchronous-processing-with-rabbitmq">Phase 3:
+Asynchronous Processing with RabbitMQ</h3>
+<p>With the database optimized, I addressed the coupling between data
+ingestion and AI model inference. The original synchronous design meant
+slow AI predictions would block the entire pipeline.</p>
+<p>I introduced RabbitMQ to decouple these components:</p>
+<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mipsasm">MQTT <span class="hljs-keyword">Broker </span>→ Node.<span class="hljs-keyword">js </span>Preprocessor → RabbitMQ → AI Worker → Alerts<br></code></pre></td></tr></table></figure>
+<h4 id="message-persistence-for-reliability">Message Persistence for
+Reliability</h4>
+<p>In a healthcare system, losing data is unacceptable:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-comment">// Durable queue survives broker restart</span><br>channel.<span class="hljs-title function_">assertQueue</span>(<span class="hljs-string">&#x27;sensor_analysis&#x27;</span>, &#123; <span class="hljs-attr">durable</span>: <span class="hljs-literal">true</span> &#125;);<br><br><span class="hljs-comment">// Persistent messages survive broker restart</span><br>channel.<span class="hljs-title function_">sendToQueue</span>(<span class="hljs-string">&#x27;sensor_analysis&#x27;</span>, <br>    <span class="hljs-title class_">Buffer</span>.<span class="hljs-title function_">from</span>(<span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">stringify</span>(data)),<br>    &#123; <span class="hljs-attr">persistent</span>: <span class="hljs-literal">true</span> &#125;<br>);<br></code></pre></td></tr></table></figure>
+<h4 id="consumer-acknowledgments">Consumer Acknowledgments</h4>
+<p>Workers only acknowledge after successful processing:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs javascript">channel.<span class="hljs-title function_">consume</span>(<span class="hljs-string">&#x27;sensor_analysis&#x27;</span>, <span class="hljs-title function_">async</span> (msg) =&gt; &#123;<br>    <span class="hljs-keyword">try</span> &#123;<br>        <span class="hljs-keyword">const</span> data = <span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">parse</span>(msg.<span class="hljs-property">content</span>.<span class="hljs-title function_">toString</span>());<br>        <span class="hljs-keyword">await</span> <span class="hljs-title function_">runFallDetection</span>(data);<br>        channel.<span class="hljs-title function_">ack</span>(msg);<br>    &#125; <span class="hljs-keyword">catch</span> (error) &#123;<br>        channel.<span class="hljs-title function_">nack</span>(msg, <span class="hljs-literal">false</span>, <span class="hljs-literal">true</span>);  <span class="hljs-comment">// Requeue for retry</span><br>    &#125;<br>&#125;, &#123; <span class="hljs-attr">noAck</span>: <span class="hljs-literal">false</span> &#125;);<br></code></pre></td></tr></table></figure>
+<hr />
+<h3 id="phase-4-containerization-with-docker">Phase 4: Containerization
+with Docker</h3>
+<p>To streamline deployment across environments, I containerized the
+system:</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-comment"># docker-compose.yml</span><br><span class="hljs-attr">version:</span> <span class="hljs-string">&#x27;3.8&#x27;</span><br><span class="hljs-attr">services:</span><br>  <span class="hljs-attr">mqtt-broker:</span><br>    <span class="hljs-attr">image:</span> <span class="hljs-string">eclipse-mosquitto:2</span><br>    <span class="hljs-attr">ports:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">&quot;8883:8883&quot;</span><br>      <br>  <span class="hljs-attr">rabbitmq:</span><br>    <span class="hljs-attr">image:</span> <span class="hljs-string">rabbitmq:3-management</span><br>    <span class="hljs-attr">ports:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">&quot;5672:5672&quot;</span><br>      <br>  <span class="hljs-attr">data-pipeline:</span><br>    <span class="hljs-attr">build:</span> <span class="hljs-string">./pipeline</span><br>    <span class="hljs-attr">depends_on:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">mqtt-broker</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">rabbitmq</span><br></code></pre></td></tr></table></figure>
+<p>This enabled one-command deployments and consistent environments
+across dev/staging/production.</p>
+<hr />
+<h3 id="phase-5-production-monitoring-with-pm2">Phase 5: Production
+Monitoring with PM2</h3>
+<p>PM2 was invaluable for production operations:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-comment">// ecosystem.config.js</span><br><span class="hljs-variable language_">module</span>.<span class="hljs-property">exports</span> = &#123;<br>    <span class="hljs-attr">apps</span>: [&#123;<br>        <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;data-pipeline&#x27;</span>,<br>        <span class="hljs-attr">script</span>: <span class="hljs-string">&#x27;./index.js&#x27;</span>,<br>        <span class="hljs-attr">instances</span>: <span class="hljs-string">&#x27;max&#x27;</span>,<br>        <span class="hljs-attr">exec_mode</span>: <span class="hljs-string">&#x27;cluster&#x27;</span>,<br>        <span class="hljs-attr">max_memory_restart</span>: <span class="hljs-string">&#x27;500M&#x27;</span>,<br>        <span class="hljs-attr">exp_backoff_restart_delay</span>: <span class="hljs-number">100</span><br>    &#125;]<br>&#125;;<br></code></pre></td></tr></table></figure>
+<p>Key capabilities I relied on: - <strong>Real-time log
+streaming</strong>: <code>pm2 logs --lines 500</code> - <strong>Process
+monitoring</strong>: <code>pm2 monit</code> - <strong>Zero-downtime
+deploys</strong>: <code>pm2 reload data-pipeline</code></p>
+<hr />
+<h3 id="real-world-impact">Real-World Impact</h3>
+<p>The optimizations I implemented weren’t just technical
+achievements—they had <strong>real-world impact</strong>:</p>
+<ul>
+<li><strong>5,400+ individuals</strong> in Long-Term Care Centers
+benefited from the fall prevention system</li>
+<li>The project contributed to the <strong>R&amp;D 100 Award</strong>
+recognition</li>
+<li>The system achieved the reliability required for 24/7 healthcare
+monitoring</li>
+</ul>
+<hr />
+<h3 id="key-takeaways">Key Takeaways</h3>
+<ol type="1">
+<li><p><strong>Measure before optimizing</strong>: Without profiling, I
+might have optimized the wrong component entirely.</p></li>
+<li><p><strong>Architecture trumps micro-optimization</strong>: No SQL
+tuning could match what a data tiering strategy achieved.</p></li>
+<li><p><strong>Design for data lifecycle</strong>: Hot and cold data
+have fundamentally different access patterns.</p></li>
+<li><p><strong>Message queues add resilience</strong>: RabbitMQ made the
+system fault-tolerant and scalable.</p></li>
+<li><p><strong>Containerization simplifies operations</strong>: Docker
+eliminated deployment inconsistencies.</p></li>
+</ol>
+<hr />
+<h3 id="conclusion">Conclusion</h3>
+<p>Transforming a 20-second pipeline into a 50-millisecond one
+required:</p>
+<ul>
+<li><strong>Deep diagnosis</strong> to find the true bottlenecks</li>
+<li><strong>Architectural thinking</strong> to redesign the data
+layer</li>
+<li><strong>Reliability engineering</strong> to ensure no data loss</li>
+<li><strong>Operational excellence</strong> for production
+monitoring</li>
+</ul>
+<p>These experiences shaped my approach to backend engineering: always
+understand the problem before jumping to solutions, and never
+underestimate the power of good architecture.</p>
+<hr />
+<p><em>Building reliable, high-performance systems is what I love most
+about backend engineering. Feel free to connect with me on <a
+target="_blank" rel="noopener" href="https://linkedin.com/in/yu-wei-chang-6714a91a4">LinkedIn</a> to
+discuss similar challenges.</em></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/ywc-s-blog/categories/Backend-Engineering/" class="category-chain-item">Backend Engineering</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/ywc-s-blog/tags/Backend/" class="print-no-link">#Backend</a>
+      
+        <a href="/ywc-s-blog/tags/Node-js/" class="print-no-link">#Node.js</a>
+      
+        <a href="/ywc-s-blog/tags/PostgreSQL/" class="print-no-link">#PostgreSQL</a>
+      
+        <a href="/ywc-s-blog/tags/RabbitMQ/" class="print-no-link">#RabbitMQ</a>
+      
+        <a href="/ywc-s-blog/tags/Performance-Optimization/" class="print-no-link">#Performance Optimization</a>
+      
+        <a href="/ywc-s-blog/tags/System-Design/" class="print-no-link">#System Design</a>
+      
+        <a href="/ywc-s-blog/tags/Docker/" class="print-no-link">#Docker</a>
+      
+        <a href="/ywc-s-blog/tags/MQTT/" class="print-no-link">#MQTT</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Optimizing an AIoT Data Pipeline: From 20 Seconds to 50 Milliseconds</div>
+      <div>https://lazybonejc.github.io/ywc-s-blog/2025/11/15/Optimizing-an-AIoT-Data-Pipeline/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>Author</div>
+          <div>Yu-Wei Chang</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>Posted on</div>
+          <div>November 15, 2025</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>Licensed under</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - Attribution">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/ywc-s-blog/2025/10/19/Deep-Dive-into-Uniswap-V1/" title="Deep Dive into Uniswap V1: The DeFi Foundation of the AMM Era">
+                        <span class="hidden-mobile">Deep Dive into Uniswap V1: The DeFi Foundation of the AMM Era</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>Table of Contents</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">Keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/ywc-s-blog/js/events.js" ></script>
+<script  src="/ywc-s-blog/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/ywc-s-blog/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/ywc-s-blog/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/ywc-s-blog/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">Blog works best with JavaScript enabled</div>
+  </noscript>
+</body>
+</html>

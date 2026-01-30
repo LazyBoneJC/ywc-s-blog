@@ -28,7 +28,7 @@
 <meta property="og:locale" content="zh_TW">
 <meta property="og:image" content="https://lazybonejc.github.io/ywc-s-blog/2025/09/10/Bug-Bounty-Journey/Lido_Dual_Governance.png">
 <meta property="article:published_time" content="2025-09-10T12:00:00.000Z">
-<meta property="article:modified_time" content="2025-09-11T06:06:23.188Z">
+<meta property="article:modified_time" content="2026-01-30T17:36:50.303Z">
 <meta property="article:author" content="Yu-Wei Chang">
 <meta property="article:tag" content="Bug Bounty">
 <meta property="article:tag" content="Web3 Security">
@@ -256,7 +256,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          191 字
+          162 字
         
       </span>
     
@@ -335,14 +335,11 @@ Design</h4>
 could permanently freeze all user funds in the <code>Escrow.sol</code>
 contract during the RageQuit process. By setting a key parameter in an
 external <code>WithdrawalQueue.sol</code> contract to a near-zero value,
-a functional deadlock would occur - Malicious Configuration of
-WithdrawalQueue Leads to Permanent Fund Lock in Escrow Contract.md].
-This would cause the withdrawal function to consistently revert,
-trapping all funds - Malicious Configuration of WithdrawalQueue Leads to
-Permanent Fund Lock in Escrow Contract.md].</li>
+a functional deadlock would occur, causing the withdrawal function to
+consistently revert and trapping all funds.</li>
 <li><strong>Lesson Learned</strong>: This experience reinforced the
 principle of <strong>defensive programming</strong>. While the scenario
-relied on a compromised governance, which was deemed out of scope, it
+relied on a compromised governance (which was deemed out of scope), it
 highlighted the need for protocols to be resilient not only in their own
 logic but also against the potential misconfiguration or malicious
 actions of their dependencies. True security means anticipating and
@@ -357,17 +354,13 @@ case” in the <code>requestNextWithdrawalsBatch</code> function to
 prematurely and permanently close the withdrawal queue. By depositing a
 crafted amount, an unprivileged attacker could ensure that a portion of
 another user’s funds would become irrecoverable “dust,” causing a
-permanent fund lock - Precision Loss in calcRequestAmounts Can Be
-Exploited to Permanently Freeze User Funds in Escrow.md].</li>
+permanent fund lock.</li>
 <li><strong>Lesson Learned</strong>: This case was a masterclass in
 understanding the difference between a new flaw and a new exploit for an
-old, accepted flaw - Precision Loss in calcRequestAmounts Can Be
-Exploited to Permanently Freeze User Funds in Escrow.md]. The root cause
-was a known integer-division rounding error documented by Lido. My
-report, while demonstrating a novel attack vector, was ultimately
-rejected because the core issue was a “known and accepted”
-characteristic of the protocol - Precision Loss in calcRequestAmounts
-Can Be Exploited to Permanently Freeze User Funds in Escrow.md].</li>
+old, accepted flaw. The root cause was a known integer-division rounding
+error documented by Lido. My report, while demonstrating a novel attack
+vector, was ultimately rejected because the core issue was a “known and
+accepted” characteristic of the protocol.</li>
 </ul>
 <hr />
 <h4
@@ -379,16 +372,14 @@ the <code>Escrow</code> contract that could allow an attacker to “double
 spend” an <code>unstETH</code> NFT. The attacker could lock and withdraw
 an NFT, and the protocol’s accounting would still treat it as a
 finalized asset. This would create a permanent deficit in the protocol’s
-ledger, leading to insolvency - Protocol Insolvency via Re-Entrancy-Like
-Double Spend in Escrow Contract.md].</li>
+ledger, leading to insolvency.</li>
 <li><strong>Lesson Learned</strong>: The Lido team’s response taught me
 that assessing the <strong>true impact</strong> of a vulnerability is as
 critical as finding it. While my technical finding was valid, the team
 pointed out that their internal accounting logic in another part of the
-contract effectively mitigated the “double-spend” risk - Protocol
-Insolvency via Re-Entrancy-Like Double Spend in Escrow Contract.md]. A
-technical flaw without a real, exploitable economic consequence is not a
-critical vulnerability.</li>
+contract effectively mitigated the “double-spend” risk. A technical flaw
+without a real, exploitable economic consequence is not a critical
+vulnerability.</li>
 </ul>
 <hr />
 <h4
@@ -400,14 +391,13 @@ maliciously reset a victim’s asset lock timer in the
 <code>Escrow.sol</code> contract without locking any new assets. This
 was a griefing attack that caused a temporary denial of service,
 preventing a targeted user from withdrawing their funds once their lock
-period expired - Griefing Attack by Abusing Lock Timer Reset.md].</li>
+period expired.</li>
 <li><strong>Lesson Learned</strong>: This finding was a crucial lesson
 in <strong>business risk assessment</strong>. The Lido team classified
 it as an “Acceptable Risk,” noting that the attack had a non-trivial gas
-cost for the attacker and yielded no financial profit - Griefing Attack
-by Abusing Lock Timer Reset.md]. The severity of a bug is a practical
-calculation of its impact, the attacker’s incentive, and the cost to
-exploit versus the damage inflicted.</li>
+cost for the attacker and yielded no financial profit. The severity of a
+bug is a practical calculation of its impact, the attacker’s incentive,
+and the cost to exploit versus the damage inflicted.</li>
 </ul>
 <hr />
 <h4 id="bug-vs.-feature-debate-the-role-of-business-logic">5. “Bug
@@ -416,16 +406,13 @@ vs. Feature” Debate: The Role of Business Logic</h4>
 <li><strong>The Bug</strong>: I identified that the
 <code>calcRequestAmounts</code> function used a “divide-before-multiply”
 pattern, leading to precision loss and the permanent discard of “dust”
-amounts - Potential Loss of Funds Due to Precision Loss in
-calcRequestAmounts.md]. From a technical standpoint, any loss of user
-funds, however small, is a flaw - Potential Loss of Funds Due to
-Precision Loss in calcRequestAmounts.md].</li>
+amounts. From a technical standpoint, any loss of user funds, however
+small, is a flaw.</li>
 <li><strong>Lesson Learned</strong>: This finding taught me a valuable
 lesson in the “bug vs. intended feature” debate. The Lido team clarified
 that the function’s purpose was solely to calculate the number of
 <em>full</em> batches, and the leftover dust was an “acceptable and
-intended precision loss” from a business logic perspective - Potential
-Loss of Funds Due to Precision Loss in calcRequestAmounts.md]. I learned
+intended precision loss” from a business logic perspective. I learned
 that in the world of bug bounties, a project’s business logic can be the
 ultimate arbiter of what constitutes a valid vulnerability.</li>
 </ul>
