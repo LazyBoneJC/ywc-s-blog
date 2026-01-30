@@ -835,18 +835,18 @@ i.iconfont {
 }
 :root {
   --color-mode: "light";
-  --body-bg-color: #f4f4f4;
+  --body-bg-color: #f8fafc;
   --board-bg-color: #fff;
-  --text-color: #1a1a1a;
-  --sec-text-color: #718096;
-  --post-text-color: #2c3e50;
+  --text-color: #1e293b;
+  --sec-text-color: #64748b;
+  --post-text-color: #334155;
   --post-heading-color: #1a202c;
-  --post-link-color: #CC1414;
-  --link-hover-color: #FF0421;
+  --post-link-color: #3b82f6;
+  --link-hover-color: #6366f1;
   --link-hover-bg-color: #f8f9fa;
   --line-color: #eaecef;
-  --navbar-bg-color: #121212;
-  --navbar-text-color: #fff;
+  --navbar-bg-color: #0f172a;
+  --navbar-text-color: #f1f5f9;
   --subtitle-color: #fff;
   --scrollbar-color: #c4c6c9;
   --scrollbar-hover-color: #a6a6a6;
@@ -854,7 +854,7 @@ i.iconfont {
   --button-hover-bg-color: #f2f3f5;
   --highlight-bg-color: #f6f8fa;
   --inlinecode-bg-color: rgba(175,184,193,0.2);
-  --fold-title-color: #1a1a1a;
+  --fold-title-color: #1e293b;
   --fold-border-color: #eaecef;
 }
 @media (prefers-color-scheme: dark) {
@@ -862,17 +862,17 @@ i.iconfont {
     --color-mode: "dark";
   }
   :root:not([data-user-color-scheme]) {
-    --body-bg-color: #0d1117;
-    --board-bg-color: #161b22;
-    --text-color: #c9d1d9;
+    --body-bg-color: #0f172a;
+    --board-bg-color: #1e293b;
+    --text-color: #e2e8f0;
     --sec-text-color: #a7a9ad;
     --post-text-color: #c4c6c9;
     --post-heading-color: #c4c6c9;
-    --post-link-color: #FF0421;
-    --link-hover-color: #FF4D4D;
+    --post-link-color: #60a5fa;
+    --link-hover-color: #818cf8;
     --link-hover-bg-color: #364151;
     --line-color: #435266;
-    --navbar-bg-color: #010409;
+    --navbar-bg-color: #020617;
     --navbar-text-color: #d0d0d0;
     --subtitle-color: #d0d0d0;
     --scrollbar-color: #687582;
@@ -881,7 +881,7 @@ i.iconfont {
     --button-hover-bg-color: #46647e;
     --highlight-bg-color: #303030;
     --inlinecode-bg-color: rgba(99,110,123,0.4);
-    --fold-title-color: #c9d1d9;
+    --fold-title-color: #e2e8f0;
     --fold-border-color: #435266;
   }
   :root:not([data-user-color-scheme]) img {
@@ -900,17 +900,17 @@ i.iconfont {
 }
 @media not print {
   [data-user-color-scheme="dark"] {
-    --body-bg-color: #0d1117;
-    --board-bg-color: #161b22;
-    --text-color: #c9d1d9;
+    --body-bg-color: #0f172a;
+    --board-bg-color: #1e293b;
+    --text-color: #e2e8f0;
     --sec-text-color: #a7a9ad;
     --post-text-color: #c4c6c9;
     --post-heading-color: #c4c6c9;
-    --post-link-color: #FF0421;
-    --link-hover-color: #FF4D4D;
+    --post-link-color: #60a5fa;
+    --link-hover-color: #818cf8;
     --link-hover-bg-color: #364151;
     --line-color: #435266;
-    --navbar-bg-color: #010409;
+    --navbar-bg-color: #020617;
     --navbar-text-color: #d0d0d0;
     --subtitle-color: #d0d0d0;
     --scrollbar-color: #687582;
@@ -919,7 +919,7 @@ i.iconfont {
     --button-hover-bg-color: #46647e;
     --highlight-bg-color: #303030;
     --inlinecode-bg-color: rgba(99,110,123,0.4);
-    --fold-title-color: #c9d1d9;
+    --fold-title-color: #e2e8f0;
     --fold-border-color: #435266;
   }
   [data-user-color-scheme="dark"] img {
