@@ -26,17 +26,29 @@ I believe in building systems that are stable, maintainable, and observable:
 
 ### 🛠️ My Tech Stack
 
-- **Languages**: TypeScript/JavaScript, Node.js
+- **Languages**: TypeScript/JavaScript, Node.js, Solidity
 - **Backend**: Express.js, NestJS, RabbitMQ
 - **Frontend**: Next.js, React, Tailwind CSS
 - **Cloud & Infrastructure**: AWS (EC2, Load Balancers), Docker, PostgreSQL
-- **Currently Learning**: Azure App Service, Cloud Networking
+- **Web3**: Smart Contract Development, DeFi Protocol Analysis, Security Auditing (Foundry)
+
+---
+
+### 🔐 Additional Background: Blockchain & Security
+
+Beyond traditional backend work, I have hands-on experience in the **Web3/blockchain** space:
+
+- Participated in smart contract security research and bug bounty programs
+- Deep understanding of DeFi protocols (AMM mechanisms, stablecoin design)
+- Technical writing on blockchain security topics (see my blog posts!)
+
+I'm open to opportunities that bridge traditional backend engineering with blockchain technology.
 
 ---
 
 ### 📬 Let's Connect!
 
-I am currently seeking **Backend / Cloud Infrastructure roles** where I can contribute to building reliable and scalable systems.
+I am currently seeking **Backend / Cloud Infrastructure / Web3** roles where I can contribute to building reliable and scalable systems.
 
 - **LinkedIn**: [Yu-Wei Chang](https://linkedin.com/in/yu-wei-chang-6714a91a4)
 - **GitHub**: [@lazybonejc](https://github.com/lazybonejc)
