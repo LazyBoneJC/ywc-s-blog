@@ -14,6 +14,8 @@ categories:
   - Backend Engineering
 ---
 
+![AIoT Data Pipeline](Optimizing-an-AIoT-Data-Pipeline/aiot_pipeline.png)
+
 ### Building Award-Winning Healthcare Technology
 
 During my internship at the Institute for Information Industry (III/資策會), I had the privilege of contributing to the **"iMat for Smart Care"** project — a 5G and AI-enabled Smart Mattress Care System. This wasn't just another internship project; it was a system that would eventually be **deployed in Long-Term Care Centers, benefiting over 5,400 individuals**.
