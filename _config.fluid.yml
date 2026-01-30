@@ -86,6 +86,11 @@ ignore:
 # Extensions
 theme: fluid
 
+# Dark Mode - 預設使用淺色模式
+dark_mode:
+  enable: true
+  default: light
+
 # Deployment
 deploy:
   type: git
