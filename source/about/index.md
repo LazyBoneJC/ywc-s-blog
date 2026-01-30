@@ -5,38 +5,38 @@ layout: about
 
 ## 👨‍💻 About Me
 
-Hello! I'm **Yu-Wei Chang**, a **Web3 Full-Stack Engineer** with a security-first mindset.
+Hello! I'm **Yu-Wei Chang**, a **Software Engineer** specializing in backend development and cloud infrastructure.
 
-I specialize in the modern Web3 stack (**Foundry, Wagmi, Next.js**) and have a deep passion for building secure decentralized applications and auditing DeFi protocols.
+I'm passionate about building high-performance systems and have a genuine love for **troubleshooting** — the "detective work" of tracing logs, diagnosing root causes, and resolving complex technical blockers.
 
 ### 🚀 Technical Expertise & Execution
 
-- **Full-Stack Mastery**: Successfully built **"Neon Marketplace"**, handling everything from sophisticated smart contracts to seamless frontend integration.
-- **Performance Optimization**: Demonstrated strong engineering principles by **optimizing a backend system by 400x**.
-- **System Architecture**: Experienced in designing event-driven architectures capable of serving **5,000+ active users**.
+- **Backend & Performance Optimization**: Architected and optimized a mission-critical data pipeline using RabbitMQ and Node.js, boosting processing speed by **400x** (20s → 0.05s) for a healthcare system.
+- **System Architecture**: Designed event-driven architectures serving **5,000+ active users**.
+- **Troubleshooting & Root Cause Analysis**: Skilled in deep-dive debugging, analyzing distributed systems to identify bottlenecks and enhance stability.
 
-### 🛡️ Security & Auditing
+### 🛡️ Reliability-First Mindset
 
-Security is at the core of my development process. I am an active participant in the security community:
+I believe in building systems that are stable, maintainable, and observable:
 
-- **Active Researcher**: Engaged in platforms like **Codehawks** and **Immunefi**.
-- **Bug Bounty**: Successfully identified critical logic flaws in the **Lido protocol**.
+- **Proactive Monitoring**: Experience setting up logging and alerting for production systems.
+- **Debugging Complex Issues**: Finding critical deadlocks and logic flaws in distributed systems.
 
 ---
 
 ### 🛠️ My Tech Stack
 
-- **Languages**: Solidity, TypeScript/JavaScript
-- **Frontend**: Next.js, React, Tailwind CSS, Zustand
-- **Smart Contracts**: Foundry, OpenZeppelin, Chainlink, Security Audits
-- **Web3 Tools**: Wagmi, Viem, RainbowKit, Circle API
-- **Infrastructure**: AWS (EC2, Load Balancers), Docker, PostgreSQL
+- **Languages**: TypeScript/JavaScript, Node.js
+- **Backend**: Express.js, NestJS, RabbitMQ
+- **Frontend**: Next.js, React, Tailwind CSS
+- **Cloud & Infrastructure**: AWS (EC2, Load Balancers), Docker, PostgreSQL
+- **Currently Learning**: Azure App Service, Cloud Networking
 
 ---
 
 ### 📬 Let's Connect!
 
-I am currently seeking **Full-Stack Web3 roles** where I can contribute to building the next generation of secure decentralized finance.
+I am currently seeking **Backend / Cloud Infrastructure roles** where I can contribute to building reliable and scalable systems.
 
-- **LinkedIn**: [Yu-Wei Chang](https://linkedin.com/in/yw-chang)
+- **LinkedIn**: [Yu-Wei Chang](https://linkedin.com/in/yu-wei-chang-6714a91a4)
 - **GitHub**: [@lazybonejc](https://github.com/lazybonejc)

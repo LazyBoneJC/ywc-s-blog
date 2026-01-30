@@ -97,11 +97,11 @@ deploy:
 
 # Slogan(打字機)
 index:
-  banner_img: /img/bitcoin.jpg
+  banner_img: /img/tech_banner.png
   banner_mask_alpha: 0.5
   slogan:
     enable: true
-    text: "Building secure DApps | Auditing DeFi Protocols."
+    text: "Building high-performance systems | Troubleshooting complex problems."
 
 # Navbar
 navbar:
@@ -116,12 +116,12 @@ web_analytics:
 # About Me (更新區域)
 about:
   enable: true
-  banner_img: /img/bitcoin.jpg
+  banner_img: /img/tech_banner.png
   banner_img_height: 60
   banner_mask_alpha: 0.6
-  avatar: /img/Azuki_9080.jpg
+  avatar: /img/Jacky_Avatar.jpg
   name: "Yu-Wei (Jacky) Chang"
-  intro: "Web3 Full-Stack Engineer | Smart Contract Security Researcher"
+  intro: "Backend Engineer | Cloud & Infrastructure Enthusiast"
   icons:
     - {
         class: "iconfont icon-github-fill",
@@ -162,27 +162,27 @@ security:
   enable_csp: false
 
 #---------------------------
-# Fluid 主題顏色設定 (Azuki 紅黑風格)
+# Fluid 主題顏色設定 (專業藍紫色系)
 #---------------------------
 color:
   # 淺色模式
-  body_bg_color: "#f4f4f4"
+  body_bg_color: "#f8fafc"
   board_color: "#fff"
-  text_color: "#1a1a1a"
-  sec_text_color: "#718096"
-  post_text_color: "#2c3e50"
-  post_link_color: "#CC1414" # Azuki 紅
-  link_hover_color: "#FF0421" # 亮紅
-  navbar_bg_color: "#121212" # 導航欄變深黑
-  navbar_text_color: "#fff"
+  text_color: "#1e293b"
+  sec_text_color: "#64748b"
+  post_text_color: "#334155"
+  post_link_color: "#3b82f6" # 專業藍
+  link_hover_color: "#6366f1" # 紫藍
+  navbar_bg_color: "#0f172a" # 深海軍藍
+  navbar_text_color: "#f1f5f9"
 
   # 深色模式
-  body_bg_color_dark: "#0d1117"
-  board_color_dark: "#161b22"
-  text_color_dark: "#c9d1d9"
-  post_link_color_dark: "#FF0421"
-  link_hover_color_dark: "#FF4D4D"
-  navbar_bg_color_dark: "#010409" # 深色下導航欄全黑
+  body_bg_color_dark: "#0f172a"
+  board_color_dark: "#1e293b"
+  text_color_dark: "#e2e8f0"
+  post_link_color_dark: "#60a5fa"
+  link_hover_color_dark: "#818cf8"
+  navbar_bg_color_dark: "#020617" # 極深藍黑
 
 custom_css: [/css/custom.css]
 
@@ -193,20 +193,20 @@ custom_css: [/css/custom.css]
 
 # 2. 文章頁 Banner (所有文章進去後的頂部背景)
 post:
-  banner_img: /img/bitcoin.jpg
+  banner_img: /img/tech_banner.png
   banner_mask_alpha: 0.3
 
 # 3. 存檔頁 Banner (/archives/)
 archive:
-  banner_img: /img/bitcoin.jpg
+  banner_img: /img/tech_banner.png
   banner_mask_alpha: 0.3
 
 # 4. 分類頁 Banner (/categories/)
 category:
-  banner_img: /img/bitcoin.jpg
+  banner_img: /img/tech_banner.png
   banner_mask_alpha: 0.3
 
 # 5. 標籤頁 Banner (/tags/)
 tag:
-  banner_img: /img/bitcoin.jpg
+  banner_img: /img/tech_banner.png
   banner_mask_alpha: 0.3
