@@ -63,11 +63,11 @@
     
     <tags>
       
-      <tag>Solidity</tag>
-      
       <tag>Uniswap</tag>
       
       <tag>AMM</tag>
+      
+      <tag>Solidity</tag>
       
       <tag>ERC20</tag>
       
@@ -96,17 +96,17 @@
     
     <tags>
       
+      <tag>Solidity</tag>
+      
+      <tag>Foundry</tag>
+      
       <tag>DeFi</tag>
       
       <tag>Stablecoin</tag>
       
-      <tag>Solidity</tag>
-      
       <tag>Blockchain</tag>
       
       <tag>Chainlink</tag>
-      
-      <tag>Foundry</tag>
       
     </tags>
     
@@ -131,17 +131,17 @@
     
     <tags>
       
-      <tag>Foundry</tag>
-      
       <tag>Fuzz Testing</tag>
       
       <tag>Invariant Testing</tag>
       
+      <tag>Handler-Based Testing</tag>
+      
+      <tag>Foundry</tag>
+      
       <tag>Smart Contract Security</tag>
       
       <tag>Web3</tag>
-      
-      <tag>Handler-Based Testing</tag>
       
     </tags>
     
@@ -168,11 +168,11 @@
       
       <tag>Solidity</tag>
       
-      <tag>Foundry</tag>
-      
       <tag>Fuzz Testing</tag>
       
       <tag>Invariant Testing</tag>
+      
+      <tag>Foundry</tag>
       
       <tag>Smart Contract Security</tag>
       
