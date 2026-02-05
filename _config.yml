@@ -91,4 +91,4 @@ deploy:
   type: git
   repo: git@github.com:LazyBoneJC/ywc-s-blog.git
   remote: origin
-  branch: main
+  branch: gh-pages
