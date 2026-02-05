@@ -1,0 +1,937 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-TW,en" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/ywc-s-blog/img/fluid.png">
+  <link rel="icon" href="/ywc-s-blog/img/fluid.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#0f172a">
+  <meta name="author" content="Yu-Wei Chang">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="The Story Begins: My Naive Approach When I started building Neon Marketplace, my NFT trading platform, I wanted to ship fast. Like most developers entering Web3, I reached for the familiar tools: Nex">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Why I Moved Away from Direct RPC Calls: Building a High-Performance Indexing Layer with Rindexer">
+<meta property="og:url" content="https://lazybonejc.github.io/ywc-s-blog/en/2026/02/05/Why-I-Moved-Away-from-Direct-RPC-Calls/index.html">
+<meta property="og:site_name" content="ywc&#39;s blog">
+<meta property="og:description" content="The Story Begins: My Naive Approach When I started building Neon Marketplace, my NFT trading platform, I wanted to ship fast. Like most developers entering Web3, I reached for the familiar tools: Nex">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://lazybonejc.github.io/ywc-s-blog/2026/02/05/Why-I-Moved-Away-from-Direct-RPC-Calls/rindexer_banner.png">
+<meta property="article:published_time" content="2026-02-05T12:00:00.000Z">
+<meta property="article:modified_time" content="2026-02-05T12:17:39.311Z">
+<meta property="article:author" content="Yu-Wei Chang">
+<meta property="article:tag" content="Backend Engineering">
+<meta property="article:tag" content="Blockchain">
+<meta property="article:tag" content="Indexer">
+<meta property="article:tag" content="Performance Optimization">
+<meta property="article:tag" content="PostgreSQL">
+<meta property="article:tag" content="Rust">
+<meta property="article:tag" content="Web3">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://lazybonejc.github.io/ywc-s-blog/2026/02/05/Why-I-Moved-Away-from-Direct-RPC-Calls/rindexer_banner.png">
+  
+  
+  
+  <title>Why I Moved Away from Direct RPC Calls: Building a High-Performance Indexing Layer with Rindexer - ywc&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/ywc-s-blog/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/ywc-s-blog/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/ywc-s-blog/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/ywc-s-blog/css/custom.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"lazybonejc.github.io","root":"/ywc-s-blog/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":"G-K8ZMSZDX7L"},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/ywc-s-blog/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/ywc-s-blog/js/utils.js" ></script>
+  <script  src="/ywc-s-blog/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=G-K8ZMSZDX7L", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', 'G-K8ZMSZDX7L');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+
+
+  
+<meta name="generator" content="Hexo 8.0.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/ywc-s-blog/">
+      <strong>ywchang&#39;s blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/ywc-s-blog/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>Home</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/ywc-s-blog/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>Archives</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/ywc-s-blog/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>Categories</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/ywc-s-blog/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>Tags</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/ywc-s-blog/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>About</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/ywc-s-blog/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Why I Moved Away from Direct RPC Calls: Building a High-Performance Indexing Layer with Rindexer"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2026-02-05 20:00" pubdate>
+          February 5, 2026 pm
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          444 words
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          4 mins
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">Why I Moved Away from Direct RPC Calls: Building a High-Performance Indexing Layer with Rindexer</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <img src="/ywc-s-blog/2026/02/05/Why-I-Moved-Away-from-Direct-RPC-Calls/rindexer_banner.png" srcset="/ywc-s-blog/img/loading.gif" lazyload class="" title="From 3s to 300ms: Rethinking Web3 Data Architecture">
+<h3 id="the-story-begins-my-naive-approach">The Story Begins: My Naive
+Approach</h3>
+<p>When I started building <strong><a
+target="_blank" rel="noopener" href="https://github.com/LazyBoneJC/Neon-Marketplace">Neon
+Marketplace</a></strong>, my NFT trading platform, I wanted to ship
+fast. Like most developers entering Web3, I reached for the familiar
+tools: Next.js on the frontend, wagmi for wallet connections, and direct
+RPC calls to Alchemy/Infura for fetching on-chain data.</p>
+<p>Simple. Straightforward. And completely wrong for production.</p>
+<p>It worked—at first. But as the project evolved and I started thinking
+about real users, the cracks became impossible to ignore.</p>
+<hr />
+<h3 id="the-pain-points-why-direct-rpc-calls-dont-scale">The Pain
+Points: Why Direct RPC Calls Don’t Scale</h3>
+<p>Let me walk you through what I experienced:</p>
+<h4 id="the-n1-problem-from-hell">1. The N+1 Problem from Hell</h4>
+<p>To display a list of 10 NFTs with their details, I had to make: - 10
+calls to <code>ownerOf()</code> - 10 calls to <code>tokenURI()</code> -
+10 calls to <code>getApproved()</code> - Additional calls for
+marketplace listing data…</p>
+<p>That’s <strong>30+ RPC calls</strong> just to render one page. Each
+call hit Alchemy’s servers, added latency, and ate into my free tier
+quota.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-comment">// The naive approach - works, but painful</span><br><span class="hljs-keyword">const</span> nfts = <span class="hljs-keyword">await</span> <span class="hljs-title class_">Promise</span>.<span class="hljs-title function_">all</span>(<br>  tokenIds.<span class="hljs-title function_">map</span>(<span class="hljs-title function_">async</span> (id) =&gt; &#123;<br>    <span class="hljs-keyword">const</span> owner = <span class="hljs-keyword">await</span> contract.<span class="hljs-title function_">ownerOf</span>(id);      <span class="hljs-comment">// RPC call #1</span><br>    <span class="hljs-keyword">const</span> uri = <span class="hljs-keyword">await</span> contract.<span class="hljs-title function_">tokenURI</span>(id);       <span class="hljs-comment">// RPC call #2</span><br>    <span class="hljs-keyword">const</span> approved = <span class="hljs-keyword">await</span> contract.<span class="hljs-title function_">getApproved</span>(id); <span class="hljs-comment">// RPC call #3</span><br>    <span class="hljs-keyword">const</span> metadata = <span class="hljs-keyword">await</span> <span class="hljs-title function_">fetch</span>(uri).<span class="hljs-title function_">then</span>(<span class="hljs-function"><span class="hljs-params">r</span> =&gt;</span> r.<span class="hljs-title function_">json</span>());<br>    <span class="hljs-keyword">return</span> &#123; id, owner, uri, approved, metadata &#125;;<br>  &#125;)<br>);<br></code></pre></td></tr></table></figure>
+<h4 id="complex-queries-forget-about-it">2. Complex Queries? Forget
+About It</h4>
+<p>Users wanted to filter NFTs by price, sort by recent listings, search
+by attributes. Reasonable requests, right?</p>
+<p>Here’s the problem: <strong>a blockchain is a linked list, not a
+database</strong>.</p>
+<p>There’s no
+<code>SELECT * FROM nfts WHERE price &lt; 1 ETH ORDER BY listed_at DESC</code>.
+To implement sorting and filtering, I would have to: 1. Fetch ALL
+listing events from the beginning of time 2. Process them in the browser
+3. Watch the browser freeze with 10,000+ entries</p>
+<p>The blockchain is a <strong>ledger</strong>, not a <strong>query
+engine</strong>. I was using it wrong.</p>
+<h4 id="the-3-5-second-loading-screen">3. The 3-5 Second Loading
+Screen</h4>
+<p>Every page refresh meant waiting. And waiting. Users would stare at a
+spinner while dozens of RPC calls completed sequentially. In 2026, a
+3-second load time feels like an eternity.</p>
+<p>This wasn’t just a minor inconvenience—it was a fundamental UX
+disaster.</p>
+<hr />
+<h3 id="the-mindset-shift-enter-the-indexer">The Mindset Shift: Enter
+the Indexer</h3>
+<p>The realization hit me: <strong>I needed a middleman</strong>.</p>
+<p>Instead of querying the blockchain directly, I needed a service that
+would: 1. <strong>Listen</strong> to on-chain events in real-time 2.
+<strong>Transform</strong> raw blockchain data into structured records
+3. <strong>Store</strong> everything in a traditional database (hello,
+PostgreSQL) 4. <strong>Serve</strong> lightning-fast queries through a
+familiar API</p>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs crmsh">Before:<br>Client → RPC <span class="hljs-keyword">Node</span> <span class="hljs-title">(slow</span>, expensive, limited queries)<br><br>After:<br>Client → My Backend API → PostgreSQL ← Indexer ← RPC <span class="hljs-keyword">Node</span><span class="hljs-title"></span><br></code></pre></td></tr></table></figure>
+<p>This architecture shift is the difference between “technically
+functional” and “production-ready.”</p>
+<hr />
+<h3 id="tool-selection-why-rindexer-won">Tool Selection: Why Rindexer
+Won</h3>
+<p>I evaluated several options:</p>
+<table>
+
+<thead>
+<tr>
+<th>Option</th>
+<th>Pros</th>
+<th>Cons</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Custom Node.js Script</strong></td>
+<td>Familiar tech, full control</td>
+<td>Must handle reorgs, reconnection, retries manually</td>
+</tr>
+<tr>
+<td><strong>The Graph</strong></td>
+<td>Decentralized, battle-tested</td>
+<td>Steep learning curve (GraphQL, AssemblyScript), less control</td>
+</tr>
+<tr>
+<td><strong>Rindexer</strong></td>
+<td>Rust performance, YAML config, built-in reorg handling</td>
+<td>Newer tool, smaller community</td>
+</tr>
+</tbody>
+</table>
+<p>Given my background in Node.js/RabbitMQ, I initially leaned toward
+building a custom solution. But I quickly realized I’d be spending weeks
+handling edge cases:</p>
+<ul>
+<li><strong>Chain reorganizations (reorgs)</strong>: When the blockchain
+“undoes” recent blocks</li>
+<li><strong>RPC connection drops</strong>: Long-running processes need
+robust reconnection logic<br />
+</li>
+<li><strong>Backfilling historical data</strong>: Processing months of
+past events without crashing</li>
+</ul>
+<p>Rindexer handles all of this out of the box. Plus, it’s written in
+Rust—compiled to a single binary with excellent memory safety and
+performance characteristics. For a long-running backend service, these
+properties matter.</p>
+<hr />
+<h3 id="understanding-rindexer-the-architecture">Understanding Rindexer:
+The Architecture</h3>
+<p>Rindexer follows a simple but powerful pipeline:</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs pgsql">┌──────────────────┐    ┌──────────────────┐    ┌──────────────────┐<br>│   RPC Node       │ →  │    Rindexer      │ →  │   PostgreSQL     │<br>│ (Event Source)   │    │ (<span class="hljs-keyword">Fetch</span> + Decode) │    │ (Queryable DB)   │<br>└──────────────────┘    └──────────────────┘    └──────────────────┘<br>         ↑                       │                        │<br>         │                       ↓                        ↓<br>    Blockchain           YAML <span class="hljs-keyword">Configuration</span>        GraphQL API<br>                        (Define what <span class="hljs-keyword">to</span> <span class="hljs-keyword">index</span>)    (Auto-<span class="hljs-keyword">generated</span>)<br></code></pre></td></tr></table></figure>
+<h4 id="step-1-define-what-to-index-yaml">Step 1: Define What to Index
+(YAML)</h4>
+<p>No Rust code required for basic use cases. Just YAML:</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">name:</span> <span class="hljs-string">NeonMarketplaceIndexer</span><br><span class="hljs-attr">description:</span> <span class="hljs-string">Indexer</span> <span class="hljs-string">for</span> <span class="hljs-string">Neon</span> <span class="hljs-string">NFT</span> <span class="hljs-string">Marketplace</span><br><span class="hljs-attr">project_type:</span> <span class="hljs-literal">no</span><span class="hljs-string">-code</span><br><br><span class="hljs-attr">networks:</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">base</span><br>    <span class="hljs-attr">chain_id:</span> <span class="hljs-number">8453</span><br>    <span class="hljs-attr">rpc:</span> <span class="hljs-string">https://base.gateway.tenderly.co</span><br><br><span class="hljs-attr">storage:</span><br>  <span class="hljs-attr">postgres:</span><br>    <span class="hljs-attr">enabled:</span> <span class="hljs-literal">true</span><br><br><span class="hljs-attr">contracts:</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">NeonNFT</span><br>    <span class="hljs-attr">details:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-attr">network:</span> <span class="hljs-string">base</span><br>        <span class="hljs-attr">address:</span> <span class="hljs-string">&quot;0x1234...your-contract-address&quot;</span><br>        <span class="hljs-attr">start_block:</span> <span class="hljs-string">&quot;12345678&quot;</span><br>    <span class="hljs-attr">abi:</span> <span class="hljs-string">./abis/NeonNFT.json</span><br>    <span class="hljs-attr">include_events:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">Transfer</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">Approval</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">Listed</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">Sold</span><br></code></pre></td></tr></table></figure>
+<p>That’s it. Rindexer reads your ABI, understands the event signatures,
+and automatically creates corresponding PostgreSQL tables.</p>
+<h4 id="step-2-automatic-schema-generation">Step 2: Automatic Schema
+Generation</h4>
+<p>When you run <code>rindexer start</code>, it: 1. Connects to your
+PostgreSQL instance 2. Creates tables matching your event structures 3.
+Starts fetching logs using <code>eth_getLogs</code> (batch requests, not
+one-by-one) 4. Decodes the hex data using your ABI 5. Inserts structured
+records into Postgres</p>
+<p>No manual schema design. No custom parsers. It just works.</p>
+<h4 id="step-3-reorg-handling-the-critical-feature">Step 3: Reorg
+Handling (The Critical Feature)</h4>
+<p>Here’s where Rindexer really shines. Blockchain reorganizations are
+inevitable—especially on L2s with faster block times.</p>
+<p>When a reorg happens, Rindexer detects it and <strong>automatically
+rolls back</strong> the affected records from your database. This
+ensures your local database maintains <strong>eventual
+consistency</strong> with the canonical chain.</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">contracts:</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">NeonNFT</span><br>    <span class="hljs-attr">details:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-attr">network:</span> <span class="hljs-string">base</span><br>        <span class="hljs-attr">address:</span> <span class="hljs-string">&quot;0x1234...&quot;</span><br>        <span class="hljs-attr">start_block:</span> <span class="hljs-string">&quot;12345678&quot;</span><br>    <span class="hljs-attr">reorg_safe_distance:</span> <span class="hljs-literal">true</span>  <span class="hljs-comment"># Enable reorg safety</span><br></code></pre></td></tr></table></figure>
+<p>The <code>reorg_safe_distance</code> option keeps a safe distance
+from the chain tip to minimize reorg exposure. For more advanced
+scenarios, Rindexer’s ExEx integration with Reth nodes provides native
+reorg notifications:</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-comment">// Under the hood, Rindexer handles these notifications</span><br>Reorged &#123;<br>    revert_from_block: <span class="hljs-number">19000098</span>,<br>    revert_to_block: <span class="hljs-number">19000100</span>,<br>    new_from_block: <span class="hljs-number">19000098</span>,<br>    new_to_block: <span class="hljs-number">19000101</span>,<br>    new_tip_hash: <span class="hljs-number">0x456</span>...<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>I didn’t have to write any of this logic. That’s weeks of development
+time saved.</p>
+<hr />
+<h3 id="the-results-from-3-seconds-to-300-milliseconds">The Results:
+From 3 Seconds to 300 Milliseconds</h3>
+<p>With the indexing layer in place, everything changed:</p>
+<table>
+
+<thead>
+<tr>
+<th>Metric</th>
+<th>Before (Direct RPC)</th>
+<th>After (Indexed)</th>
+<th>Improvement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NFT list load time</td>
+<td>3-5 seconds</td>
+<td>200-300ms</td>
+<td><strong>~10x faster</strong></td>
+</tr>
+<tr>
+<td>Complex filtering</td>
+<td>Browser freeze</td>
+<td>Instant</td>
+<td><strong>Usable</strong></td>
+</tr>
+<tr>
+<td>API quota usage</td>
+<td>1000s of calls/min</td>
+<td>~10 calls/min</td>
+<td><strong>99% reduction</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Queries that were impossible before became trivial:</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-comment">-- Get latest 20 listed NFTs under 0.5 ETH</span><br><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> neon_nft_listed<br><span class="hljs-keyword">WHERE</span> price <span class="hljs-operator">&lt;</span> <span class="hljs-number">500000000000000000</span>  <span class="hljs-comment">-- 0.5 ETH in wei</span><br><span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> block_number <span class="hljs-keyword">DESC</span><br>LIMIT <span class="hljs-number">20</span>;<br></code></pre></td></tr></table></figure>
+<p>With proper B-tree indexes on the price and block_number columns,
+this query returns in <strong>single-digit milliseconds</strong>.</p>
+<hr />
+<h3 id="bonus-enabling-compliance">Bonus: Enabling Compliance</h3>
+<p>Here’s something I didn’t anticipate: having data in my own database
+unlocked compliance capabilities.</p>
+<p>For Neon Marketplace, I integrated <strong>Circle’s Compliance
+API</strong> to screen wallet addresses before displaying transaction
+history. This wouldn’t be possible with direct RPC calls—you can’t
+filter blockchain data by external compliance lists.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-comment">// Pseudo-code for compliance-aware API</span><br><span class="hljs-keyword">async</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">getListings</span>(<span class="hljs-params">userId</span>) &#123;<br>  <span class="hljs-keyword">const</span> listings = <span class="hljs-keyword">await</span> db.<span class="hljs-title function_">query</span>(<span class="hljs-string">&#x27;SELECT * FROM listings ORDER BY created_at DESC&#x27;</span>);<br>  <br>  <span class="hljs-comment">// Screen seller addresses against compliance API</span><br>  <span class="hljs-keyword">const</span> screenedListings = <span class="hljs-keyword">await</span> <span class="hljs-title class_">Promise</span>.<span class="hljs-title function_">all</span>(<br>    listings.<span class="hljs-title function_">map</span>(<span class="hljs-title function_">async</span> (listing) =&gt; &#123;<br>      <span class="hljs-keyword">const</span> isClean = <span class="hljs-keyword">await</span> <span class="hljs-title function_">circleComplianceCheck</span>(listing.<span class="hljs-property">seller</span>);<br>      <span class="hljs-keyword">return</span> isClean ? listing : <span class="hljs-literal">null</span>;<br>    &#125;)<br>  );<br>  <br>  <span class="hljs-keyword">return</span> screenedListings.<span class="hljs-title function_">filter</span>(<span class="hljs-title class_">Boolean</span>);<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>This is only possible when <strong>you</strong> control the data
+layer.</p>
+<hr />
+<h3 id="lessons-learned">Lessons Learned</h3>
+<p>Building Neon Marketplace taught me several valuable lessons:</p>
+<ol type="1">
+<li><p><strong>Don’t treat blockchain as a database</strong><br />
+It’s a ledger. Respect its purpose and build the right
+abstractions.</p></li>
+<li><p><strong>Choose tools, don’t build everything</strong><br />
+I could have spent months building a custom indexer. Instead, I picked
+Rindexer and shipped features that actually matter to users.</p></li>
+<li><p><strong>Rust tooling is ready for production</strong><br />
+The Web3 ecosystem is increasingly Rust-first (Reth, rindexer, Foundry).
+Learning to leverage these tools gives you significant
+advantages.</p></li>
+<li><p><strong>Local data unlocks possibilities</strong><br />
+Compliance, analytics, caching, complex queries—all become possible when
+you own your data layer.</p></li>
+</ol>
+<hr />
+<h3 id="whats-next">What’s Next?</h3>
+<p>Rindexer continues to evolve. Features I’m excited about:</p>
+<ul>
+<li><strong>Reth ExEx Integration</strong>: Direct access to node memory
+for zero-RPC-overhead indexing</li>
+<li><strong>Kafka/RabbitMQ Streaming</strong>: Real-time event
+notifications for reactive architectures</li>
+<li><strong>Multi-chain Indexing</strong>: Index multiple networks with
+a single configuration</li>
+</ul>
+<p>For now, my Neon Marketplace runs smoothly with a simple setup:</p>
+<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mipsasm">Next.<span class="hljs-keyword">js </span>Frontend → Express.<span class="hljs-keyword">js </span>API → PostgreSQL ← Rindexer ← <span class="hljs-keyword">Base </span>RPC<br></code></pre></td></tr></table></figure>
+<p>Clean. Fast. Maintainable.</p>
+<hr />
+<h3 id="conclusion">Conclusion</h3>
+<p>Moving from direct RPC calls to an indexed architecture wasn’t just a
+performance optimization—it was a fundamental shift in how I think about
+Web3 application development.</p>
+<p>The blockchain is your source of truth. But for a great user
+experience, you need a <strong>query layer</strong> between your users
+and the chain. Tools like Rindexer make this accessible without
+requiring you to become a database expert or Rust developer.</p>
+<p>If you’re building a dApp and finding yourself frustrated with slow
+load times or limited query capabilities, consider building your own
+indexing layer. Your users (and your RPC quota) will thank you.</p>
+<hr />
+<p><em>Want to see the code? Check out the <a
+target="_blank" rel="noopener" href="https://github.com/LazyBoneJC/Neon-Marketplace">Neon Marketplace
+repository</a> on GitHub. Feel free to connect with me on <a
+target="_blank" rel="noopener" href="https://linkedin.com/in/yu-wei-chang-6714a91a4">LinkedIn</a> to
+discuss Web3 architecture patterns.</em></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/ywc-s-blog/categories/Backend-Engineering/" class="category-chain-item">Backend Engineering</a>
+  
+  
+    <span>></span>
+    
+  <a href="/ywc-s-blog/categories/Backend-Engineering/Blockchain/" class="category-chain-item">Blockchain</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/ywc-s-blog/tags/Web3/" class="print-no-link">#Web3</a>
+      
+        <a href="/ywc-s-blog/tags/PostgreSQL/" class="print-no-link">#PostgreSQL</a>
+      
+        <a href="/ywc-s-blog/tags/Performance-Optimization/" class="print-no-link">#Performance Optimization</a>
+      
+        <a href="/ywc-s-blog/tags/Blockchain/" class="print-no-link">#Blockchain</a>
+      
+        <a href="/ywc-s-blog/tags/Rust/" class="print-no-link">#Rust</a>
+      
+        <a href="/ywc-s-blog/tags/Indexer/" class="print-no-link">#Indexer</a>
+      
+        <a href="/ywc-s-blog/tags/Backend-Engineering/" class="print-no-link">#Backend Engineering</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Why I Moved Away from Direct RPC Calls: Building a High-Performance Indexing Layer with Rindexer</div>
+      <div>https://lazybonejc.github.io/ywc-s-blog/2026/02/05/Why-I-Moved-Away-from-Direct-RPC-Calls/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>Author</div>
+          <div>Yu-Wei Chang</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>Posted on</div>
+          <div>February 5, 2026</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>Licensed under</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - Attribution">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/ywc-s-blog/2025/11/15/Optimizing-an-AIoT-Data-Pipeline/" title="Optimizing an AIoT Data Pipeline: From 20 Seconds to 50 Milliseconds">
+                        <span class="hidden-mobile">Optimizing an AIoT Data Pipeline: From 20 Seconds to 50 Milliseconds</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>Table of Contents</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">Keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/ywc-s-blog/js/events.js" ></script>
+<script  src="/ywc-s-blog/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/ywc-s-blog/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/ywc-s-blog/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/ywc-s-blog/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">Blog works best with JavaScript enabled</div>
+  </noscript>
+</body>
+</html>
