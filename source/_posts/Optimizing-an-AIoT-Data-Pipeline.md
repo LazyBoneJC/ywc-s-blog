@@ -14,7 +14,7 @@ categories:
   - Backend Engineering
 ---
 
-![AIoT Data Pipeline](Optimizing-an-AIoT-Data-Pipeline/aiot_pipeline.png)
+![400x Faster: My Challenge at III](Optimizing-an-AIoT-Data-Pipeline/iii_internship_banner.png)
 
 ### Building Award-Winning Healthcare Technology
 
